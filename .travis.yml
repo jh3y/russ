@@ -1,0 +1,10 @@
+language: node_js
+node_js:
+  - "0.10"
+sudo: false
+install:
+  - npm install
+before_script:
+  - make build
+script:
+  - make run-tests
