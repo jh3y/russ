@@ -1,0 +1,5 @@
+div
+  background black
+
+.is--active
+  color white
