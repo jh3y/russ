@@ -5,7 +5,7 @@
     utils    = require('./utils'),
     compile  = function() {
       var styleContent, result;
-      glob('./src/stylus/{style,base}.stylus', {nosort: true}, function(err, files){
+      glob('./src/stylus/{style,*}.stylus', {nosort: true}, function(err, files){
         utils.readFiles(files, function(err, actualFiles) {
           styleContent = utils.concatFiles(actualFiles);
           styleContent = stylus(styleContent)
