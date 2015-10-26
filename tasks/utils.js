@@ -6,7 +6,7 @@
           errors  = {};
         filePaths.forEach(function(filePath, idx) {
           console.log(filePath, idx);
-          fs.readFile(filePath, function(err, fileData){
+          fs.readFile(filePath, 'utf-8', function(err, fileData){
             if (err) {
               errors[filePath] = err;
             } else {
@@ -19,7 +19,7 @@
         });
       },
       concatFiles: function(files) {
-        var result;
+        var result = '';
         for (var file in files) {
           result += files[file];
         }
