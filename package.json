@@ -4,9 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "compile": "node ./tasks/main",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "native": "stylus src/stylus/style.stylus --out public"
+    "compile": "node ./tasks/compile",
+    "watch"  : "node ./tasks/watch",
+    "test"   : "echo \"Error: no test specified\" && exit 1",
+    "native" : "stylus src/stylus/style.stylus --out public"
   },
   "author": "",
   "license": "ISC",
