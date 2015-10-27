@@ -1,5 +1,5 @@
 div
-  background black
+  background white
 
 .is--active
   color red

@@ -3,27 +3,13 @@
     fs       = require('fs'),
     glob     = require('glob'),
     utils    = require('./utils'),
+    style    = require('./style'),
     compile  = function() {
-      var styleContent, result;
-      glob('./src/stylus/{style,*}.stylus', {nosort: true}, function(err, files){
-        utils.readFiles(files, function(err, actualFiles) {
-          styleContent = utils.concatFiles(actualFiles);
-          stylus(styleContent)
-            .set('filename', 'bolt.css')
-            .render(function(err, css) {
-              result = css;
-              if (!fs.existsSync('./public/')){
-                fs.mkdirSync('./public/');
-              }
-              fs.writeFile('public/test', css, function (err) {
-                if (err) throw err;
-                console.log('It\'s saved!');
-              });
-            });
-        });
-      });
+      style();
     };
-  console.info(this);
-  compile();
-  module.exports = compile;
+  if (require.main === module) {
+    compile();
+  } else {
+    module.exports = compile;
+  }
 }(this));
