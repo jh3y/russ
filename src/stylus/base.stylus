@@ -2,4 +2,4 @@ div
   background white
 
 .is--active
-  color red
+  color indigo
