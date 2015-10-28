@@ -6,8 +6,8 @@
     compile = function() {
       var styleContent, result;
       glob('./src/stylus/{style,*}.stylus', {nosort: true}, function(err, files){
-        utils.readFiles(files, function(err, actualFiles) {
-          styleContent = utils.concatFiles(actualFiles);
+        utils.readFiles(files, function(actualFiles) {
+          styleContent = utils.concatFiles(actualFiles, files);
           stylus(styleContent)
             .set('filename', 'bolt.css')
             .render(function(err, css) {

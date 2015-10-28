@@ -4,15 +4,17 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "watch:stylus": "node ./tasks/watch --dir src/stylus --exec styles --name Stylus",
-    "compile"     : "node ./tasks/compile",
-    "watch"       : "npm run watch:stylus -s",
-    "test"        : "echo \"Error: no test specified\" && exit 1",
-    "native"      : "stylus src/stylus/style.stylus --out public"
+    "watch:stylus": "node ./tasks/watch -d src/stylus -e styles -n Stylus",
+    "compile": "node ./tasks/compile",
+    "watch": "npm run watch:stylus -s",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "native": "stylus src/stylus/style.stylus --out public"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "async": "^1.5.0",
+    "commander": "^2.9.0",
     "glob": "^5.0.15",
     "stylus": "^0.52.4"
   }
