@@ -4,14 +4,11 @@
     stylus  = require('stylus'),
     utils   = require('./utils'),
     compile = function() {
-      var styleContent, result;
       glob('./src/stylus/{style,*}.stylus', {nosort: true}, function(err, files){
         utils.readFiles(files, function(actualFiles) {
-          styleContent = utils.concatFiles(actualFiles, files);
+          var styleContent = utils.concatFiles(actualFiles, files);
           stylus(styleContent)
-            .set('filename', 'bolt.css')
             .render(function(err, css) {
-              result = css;
               if (!fs.existsSync('./public/')){
                 fs.mkdirSync('./public/');
               }
@@ -23,5 +20,9 @@
         });
       });
     };
-  module.exports = compile;
+  if (require.main === module) {
+    compile();
+  } else {
+    module.exports = compile;
+  }
 }());

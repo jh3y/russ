@@ -1,6 +1,8 @@
 colorPalette = {
   red   : #E74C3C
   blue  : blue
+  purple: purple
+  green : green
 }
 
 for key, value in colorPalette

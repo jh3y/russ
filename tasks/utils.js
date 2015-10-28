@@ -15,7 +15,7 @@
       var readFile = function (filePath, cb) {
         fs.readFile(filePath, 'utf-8', function(error, data) {
           files[filePath] = data;
-          cb(null, null);
+          cb();
         });
       };
       async.map(filePaths, readFile, function(err, results) {

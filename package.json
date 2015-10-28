@@ -11,7 +11,7 @@
     "native": "stylus src/stylus/style.stylus --out public"
   },
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "async": "^1.5.0",
     "commander": "^2.9.0",
