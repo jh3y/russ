@@ -2,6 +2,7 @@
   var fs    = require('fs'),
     style   = require('./style'),
     utils   = require('./utils'),
+    args    = require('commander'),
     compiler = {
       style: style
     },
