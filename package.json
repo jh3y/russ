@@ -4,10 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "compile": "node ./tasks/compile",
-    "watch"  : "node ./tasks/watch & node ./tasks/watchTwo",
-    "test"   : "echo \"Error: no test specified\" && exit 1",
-    "native" : "stylus src/stylus/style.stylus --out public"
+    "watch:stylus": "node ./tasks/watch --dir src/stylus --exec styles --name Stylus",
+    "compile"     : "node ./tasks/compile",
+    "watch"       : "npm run watch:stylus -s",
+    "test"        : "echo \"Error: no test specified\" && exit 1",
+    "native"      : "stylus src/stylus/style.stylus --out public"
   },
   "author": "",
   "license": "ISC",

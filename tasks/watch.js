@@ -1,21 +1,25 @@
 (function(){
   var fs    = require('fs'),
-    compile = require('./compile'),
+    style   = require('./style'),
     utils   = require('./utils'),
     compiler = {
-      compile: compile
+      style: style
     },
     watch   = function() {
       var args = utils.getArgs(process.argv);
       if (args.name) {
         console.log(args.name, 'watcher started!');
       }
-      fs.watch(args.dir, function(event, filename) {
-        if (filename) {
-          console.log(filename, 'changed!');
-          compiler[args.exec]();
-        }
-      });
+      if (args.dir && args.exec) {
+        fs.watch(args.dir, function(event, filename) {
+          if (filename) {
+            console.log(filename, 'changed!');
+            compiler[args.exec]();
+          }
+        });
+      } else {
+        throw('bolt: Directory and execution options must be defined for watch');
+      }
     };
   if (require.main === module) {
     watch();
