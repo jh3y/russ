@@ -2,17 +2,17 @@
   var fs    = require('fs'),
     style   = require('./style'),
     utils   = require('./utils'),
-    args    = require('commander'),
     compiler = {
       style: style
     },
     watch   = function() {
       var args = utils.getArgs(process.argv);
-      if (args.name) {
+      if (typeof args.name === 'string') {
         console.log(args.name, 'watcher started!');
       }
       if (args.dir && args.exec) {
         fs.watch(args.dir, function(event, filename) {
+          console.log(event);
           if (filename) {
             console.log(filename, 'changed!');
             compiler[args.exec]();
