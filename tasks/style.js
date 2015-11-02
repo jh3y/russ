@@ -9,12 +9,18 @@
           var styleContent = utils.concatFiles(actualFiles, files);
           stylus(styleContent)
             .render(function(err, css) {
+              var outputFile = function(styles) {
+                fs.writeFile('public/test.css', styles, function (err) {
+                  if (err) throw err;
+                  console.log('It\'s saved!');
+                });
+              };
               if (!fs.existsSync('./public/')){
                 fs.mkdirSync('./public/');
               }
-              fs.writeFile('public/test', css, function (err) {
-                if (err) throw err;
-                console.log('It\'s saved!');
+              // Try prepending the license here.
+              utils.license(css, function(licensed) {
+                outputFile(licensed);
               });
             });
         });
