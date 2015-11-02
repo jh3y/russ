@@ -8,7 +8,8 @@
     "compile": "node ./tasks/compile",
     "watch": "npm run watch:stylus -s",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "native": "stylus src/stylus/style.stylus --out public"
+    "native": "stylus src/stylus/style.stylus --out public",
+    "build:styles": "node ./tasks/style"
   },
   "author": "",
   "license": "MIT",

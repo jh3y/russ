@@ -29,10 +29,18 @@
       }
       return result;
     },
+    license = function(file, cb) {
+      fs.readFile('./LICENSE.md', 'utf-8', function(error, data) {
+        var licenseHeader = '/*\n' + data + '*/\n';
+        var content = licenseHeader + file;
+        cb(content);
+      });
+    };
     utils = {
       getArgs    : getArgs,
       readFiles  : readFiles,
-      concatFiles: concatFiles
+      concatFiles: concatFiles,
+      license    : license
     };
   module.exports = utils;
 }(this));
