@@ -2,4 +2,4 @@ div
   background black
 
 .is--active
-  color red
+  color green

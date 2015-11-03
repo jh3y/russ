@@ -2,7 +2,6 @@ colorPalette = {
   red   : #E74C3C
   black : black
   purple: purple
-  green : green
 }
 
 for key, value in colorPalette
