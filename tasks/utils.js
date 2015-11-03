@@ -30,11 +30,10 @@
       return result;
     },
     license = function(file, cb) {
-      fs.readFile('./LICENSE.md', 'utf-8', function(error, data) {
-        var licenseHeader = '/*\n' + data + '*/\n';
-        var content = licenseHeader + file;
-        cb(content);
-      });
+      var content;
+      var license = fs.readFileSync('./LICENSE.md', 'utf-8');
+      content = '/*\n' + license + '*/\n' + file;
+      return content;
     };
     utils = {
       getArgs    : getArgs,
