@@ -4,18 +4,20 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "watch:stylus": "node ./tasks/watch -d src/stylus -e style -n Stylus",
+    "watch:styles": "node ./tasks/watch -d src/stylus -e style -n Stylus",
+    "watch:scripts": "node ./tasks/watch -d src/coffee -e script -n Coffee",
     "compile": "node ./tasks/compile",
-    "watch": "npm run watch:stylus -s",
+    "watch": "npm run watch:styles -s & npm run watch:scripts -s",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "native": "stylus src/stylus/style.stylus --out public",
-    "build:styles": "node ./tasks/style"
+    "build:styles": "node ./tasks/style",
+    "build:scripts": "node ./tasks/script"
   },
   "author": "",
   "license": "MIT",
   "devDependencies": {
     "async": "^1.5.0",
     "autoprefixer": "^6.0.3",
+    "coffee-script": "^1.10.0",
     "commander": "^2.9.0",
     "glob": "^5.0.15",
     "postcss": "^5.0.10",
