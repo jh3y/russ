@@ -1,6 +1,6 @@
 colorPalette = {
   red   : #E74C3C
-  blue  : blue
+  black : black
   purple: purple
   green : green
 }

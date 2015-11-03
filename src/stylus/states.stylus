@@ -1,5 +1,5 @@
 .is--hidden
   display none
 .is--red
-  background red
+  background blue
   color      red
