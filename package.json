@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "watch:stylus": "node ./tasks/watch -d src/stylus -e styles -n Stylus",
+    "watch:stylus": "node ./tasks/watch -d src/stylus -e style -n Stylus",
     "compile": "node ./tasks/compile",
     "watch": "npm run watch:stylus -s",
     "test": "echo \"Error: no test specified\" && exit 1",

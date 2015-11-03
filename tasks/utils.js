@@ -1,6 +1,7 @@
 (function(){
   var fs    = require('fs'),
     program = require('commander'),
+    glob    = require('glob'),
     async   = require('async'),
     getArgs = function(args) {
       program
@@ -10,24 +11,29 @@
         .parse(args);
       return program;
     },
-    readFiles = function(filePaths, callBack) {
-      var files    = {};
-      var readFile = function (filePath, cb) {
-        fs.readFile(filePath, 'utf-8', function(error, data) {
-          files[filePath] = data;
-          cb();
-        });
-      };
-      async.map(filePaths, readFile, function(err, results) {
-        callBack(files);
-      });
-    },
     concatFiles = function(files, paths) {
       var result = '';
       for (var path in paths) {
         result += files[paths[path]];
       }
       return result;
+    },
+    readFiles = function(filesGlob, concatenated, callBack) {
+      glob(filesGlob, {nosort: true}, function(err, files){
+        var result    = {};
+        var readFile = function (filePath, cb) {
+          fs.readFile(filePath, 'utf-8', function(error, data) {
+            result[filePath] = data;
+            cb();
+          });
+        };
+        async.map(files, readFile, function(err, results) {
+          if (concatenated) {
+            result = concatFiles(result, files);
+          }
+          callBack(result);
+        });
+      });
     },
     license = function(file, cb) {
       var content;
