@@ -1,11 +1,13 @@
 (function(){
   var fs    = require('fs'),
-    style   = require('./style'),
-    script  = require('./script'),
+    styles  = require('./styles'),
+    scripts = require('./scripts'),
+    markup  = require('./markup'),
     utils   = require('./utils'),
     compiler = {
-      style: style,
-      script: script
+      styles : styles,
+      scripts: scripts,
+      markup : markup
     },
     watch   = function() {
       var args = utils.getArgs(process.argv);

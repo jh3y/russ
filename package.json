@@ -1,18 +1,15 @@
 {
   "name": "bolt",
   "version": "0.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "setting up a task runner with nothing but node!",
   "scripts": {
-    "watch:styles": "node ./tasks/watch -d src/stylus -e style -n Stylus",
-    "watch:scripts": "node ./tasks/watch -d src/coffee -e script -n Coffee",
-    "compile": "node ./tasks/compile",
+    "watch:styles": "node ./tasks/watch -d src/stylus -e styles -n Stylus",
+    "watch:scripts": "node ./tasks/watch -d src/coffee -e scripts -n Coffee",
     "watch": "npm run watch:styles -s & npm run watch:scripts -s",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build:styles": "node ./tasks/style",
-    "build:scripts": "node ./tasks/script"
+    "build:styles": "node ./tasks/styles",
+    "build:scripts": "node ./tasks/scripts"
   },
-  "author": "",
+  "author": "jh3y <jh3y@live.co.uk>",
   "license": "MIT",
   "devDependencies": {
     "async": "^1.5.0",
@@ -22,6 +19,7 @@
     "cssnano": "^3.3.2",
     "glob": "^5.0.15",
     "postcss": "^5.0.10",
+    "stylelint": "^2.0.0",
     "stylus": "^0.52.4"
   }
 }

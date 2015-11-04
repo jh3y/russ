@@ -35,16 +35,31 @@
         });
       });
     },
+    checkPath  = function(path) {
+      if (!fs.existsSync(path)){
+        var dirs  = path.split('/'),
+          dirPath = '';
+        while (dirs.length > 0) {
+          var dir = dirs[0];
+          if (dir.trim() !== '') {
+            dirPath = dirPath + dir + '/';
+            if (!fs.existsSync(dirPath)) {
+              fs.mkdirSync(dirPath);
+            }
+          }
+          dirs.shift();
+        }
+      }
+    },
     license = function(file, cb) {
-      var content;
       var license = fs.readFileSync('./LICENSE.md', 'utf-8');
-      content = '/*\n' + license + '*/\n' + file;
-      return content;
+      return '/*!\n' + license + '!*/\n' + file;
     };
     utils = {
       getArgs    : getArgs,
       readFiles  : readFiles,
       concatFiles: concatFiles,
+      checkPath  : checkPath,
       license    : license
     };
   module.exports = utils;
