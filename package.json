@@ -19,6 +19,7 @@
     "autoprefixer": "^6.0.3",
     "coffee-script": "^1.10.0",
     "commander": "^2.9.0",
+    "cssnano": "^3.3.2",
     "glob": "^5.0.15",
     "postcss": "^5.0.10",
     "stylus": "^0.52.4"
