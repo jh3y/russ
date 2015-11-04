@@ -1,7 +1,6 @@
 colorPalette = {
   red   : #E74C3C
   black : black
-  purple: purple
 }
 
 for key, value in colorPalette
@@ -9,3 +8,9 @@ for key, value in colorPalette
     background-color value
   .tx--{key}
     color value
+
+@keyframes spin
+  from
+    transform rotate(0deg)
+  to
+    transform rotate(360deg)
