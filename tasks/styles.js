@@ -8,6 +8,7 @@
     dest    = config.paths.destinations,
     opts    = config.pluginOpts,
     utils   = require('./utils'),
+    args    = utils.getArgs(process.argv),
     compile = function() {
       utils.readFiles(src.styles, true, function(files) {
         var outputPath = dest.styles + config.name + '.css',
@@ -27,9 +28,13 @@
         stylus(files)
           .render(function(err, css) {
             utils.checkPath(dest.styles);
-            css = utils.license(css);
+            if (args.licensed) {
+              css = utils.license(css);
+            }
             outputFile(css, false);
-            outputFile(css, true);
+            if (args.minified) {
+              outputFile(css, true);
+            }
           });
       });
     };

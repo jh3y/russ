@@ -7,6 +7,7 @@
     dest    = config.paths.destinations,
     opts    = config.pluginOpts,
     utils   = require('./utils'),
+    args    = utils.getArgs(process.argv),
     compile = function() {
       utils.checkPath(dest.markup);
       glob(src.markup, {nosort: true}, function(err, files) {
@@ -15,8 +16,7 @@
             pretty: true
           });
           var filename = files[i].substr(files[i].lastIndexOf('/')).replace('.jade', '.html');
-          console.log(markup, filename);
-          fs.writeFile(dest.markup + filename, markup);
+          fs.writeFileSync(dest.markup + filename, markup);
         }
       });
     };

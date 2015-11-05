@@ -8,6 +8,8 @@
         .option('-d, --dir [value]', 'Specify a directory')
         .option('-e, --exec [value]', 'Execute function')
         .option('-n, --name [value]', 'Name')
+        .option('-m, --minified', 'Minify output')
+        .option('-l, --licensed', 'License output')
         .parse(args);
       return program;
     },
