@@ -9,7 +9,9 @@
     "watch": "npm run watch:styles -s & npm run watch:scripts -s & npm run watch:markup -s",
     "build:styles": "node ./tasks/styles",
     "build:scripts": "node ./tasks/scripts",
-    "build:markup" : "node ./tasks/markup"
+    "build:markup" : "node ./tasks/markup",
+    "build:complete": "npm run build:styles -- -l -m & npm run build:markup -- -l -m & npm run build:scripts -- -l -m",
+    "publish": "npm run build:complete"
   },
   "author": "jh3y <jh3y@live.co.uk>",
   "license": "MIT",
