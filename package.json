@@ -3,15 +3,15 @@
   "version": "0.0.0",
   "description": "setting up a task runner with nothing but node!",
   "scripts": {
-    "watch:styles" : "node ./tasks/watch -d src/stylus -e styles -n Stylus",
+    "watch:styles": "node ./tasks/watch -d src/stylus -e styles -n Stylus",
     "watch:scripts": "node ./tasks/watch -d src/coffee -e scripts -n Coffee",
-    "watch:markup" : "node ./tasks/watch -d src/jade -e markup -n Jade",
+    "watch:markup": "node ./tasks/watch -d src/jade -e markup -n Jade",
     "watch": "npm run watch:styles -s & npm run watch:scripts -s & npm run watch:markup -s",
     "build:styles": "node ./tasks/styles",
     "build:scripts": "node ./tasks/scripts",
-    "build:markup" : "node ./tasks/markup",
+    "build:markup": "node ./tasks/markup",
     "build:complete": "npm run build:styles -s & npm run build:markup -s & npm run build:scripts -s",
-    "publish": "npm run build:styles -- -l -m & npm run build:markup -- -l -m & npm run build:scripts -- -l -m"
+    "publish": "npm run build:styles -- -l -m & npm run build:markup -- -m & npm run build:scripts -- -l -m"
   },
   "author": "jh3y <jh3y@live.co.uk>",
   "license": "MIT",
@@ -25,6 +25,7 @@
     "jade": "^1.11.0",
     "postcss": "^5.0.10",
     "stylelint": "^2.0.0",
-    "stylus": "^0.52.4"
+    "stylus": "^0.52.4",
+    "uglify-js": "^2.5.0"
   }
 }
