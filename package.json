@@ -10,8 +10,8 @@
     "build:styles": "node ./tasks/styles",
     "build:scripts": "node ./tasks/scripts",
     "build:markup" : "node ./tasks/markup",
-    "build:complete": "npm run build:styles -- -l -m & npm run build:markup -- -l -m & npm run build:scripts -- -l -m",
-    "publish": "npm run build:complete"
+    "build:complete": "npm run build:styles -s & npm run build:markup -s & npm run build:scripts -s",
+    "publish": "npm run build:styles -- -l -m & npm run build:markup -- -l -m & npm run build:scripts -- -l -m"
   },
   "author": "jh3y <jh3y@live.co.uk>",
   "license": "MIT",
