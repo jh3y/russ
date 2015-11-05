@@ -3,11 +3,13 @@
   "version": "0.0.0",
   "description": "setting up a task runner with nothing but node!",
   "scripts": {
-    "watch:styles": "node ./tasks/watch -d src/stylus -e styles -n Stylus",
+    "watch:styles" : "node ./tasks/watch -d src/stylus -e styles -n Stylus",
     "watch:scripts": "node ./tasks/watch -d src/coffee -e scripts -n Coffee",
-    "watch": "npm run watch:styles -s & npm run watch:scripts -s",
+    "watch:markup" : "node ./tasks/watch -d src/jade -e markup -n Jade",
+    "watch": "npm run watch:styles -s & npm run watch:scripts -s & npm run watch:markup -s",
     "build:styles": "node ./tasks/styles",
-    "build:scripts": "node ./tasks/scripts"
+    "build:scripts": "node ./tasks/scripts",
+    "build:markup" : "node ./tasks/markup"
   },
   "author": "jh3y <jh3y@live.co.uk>",
   "license": "MIT",
@@ -18,6 +20,7 @@
     "commander": "^2.9.0",
     "cssnano": "^3.3.2",
     "glob": "^5.0.15",
+    "jade": "^1.11.0",
     "postcss": "^5.0.10",
     "stylelint": "^2.0.0",
     "stylus": "^0.52.4"
