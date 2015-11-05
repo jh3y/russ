@@ -9,7 +9,7 @@
     opts    = config.pluginOpts,
     utils   = require('./utils'),
     compile = function() {
-      utils.readFiles(src.styles, true, function(files, paths) {
+      utils.readFiles(src.styles, true, function(files) {
         var outputPath = dest.styles + config.name + '.css',
           nanoOpts = opts.cssnano,
           outputFile = function(styles, minified) {
