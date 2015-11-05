@@ -54,8 +54,8 @@
       }
     },
     license = function(file, cb) {
-      var license = fs.readFileSync('./LICENSE.md', 'utf-8');
-      return '/*!\n' + license + '!*/\n' + file;
+      var license = fs.readFileSync('src/license.txt', 'utf-8');
+      return license + '\n' + file;
     };
     utils = {
       getArgs    : getArgs,
