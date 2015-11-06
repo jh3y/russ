@@ -27,6 +27,12 @@ var pkg  = require('./package.json'),
           name       : pkg.name,
           description: pkg.description
         }
+      },
+      uglify: {
+        output: {
+          comments: true
+        },
+        fromString: true
       }
     },
     paths     : {

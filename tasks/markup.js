@@ -10,7 +10,6 @@
     args    = utils.getArgs(process.argv),
     compile = function(file) {
       if (file) {
-        // Want to just compile one file...
         var markup = jade.renderFile('src/jade/' + file, opts.jade);
         var outputName = file.replace('.jade', '.html');
         utils.writeFile(dest.markup + outputName, markup);

@@ -10,19 +10,15 @@
     args    = utils.getArgs(process.argv),
     compile = function() {
       utils.readFiles(src.scripts, true, function(files) {
-        var scripts = coffee.compile(files, opts.coffee);
+        var outputPath = dest.scripts + config.name + '.js',
+          scripts = coffee.compile(files, opts.coffee);
         if (args.licensed) {
           scripts = utils.license(scripts);
         }
-        utils.writeFile(dest.scripts + config.name + '.js', scripts);
+        utils.writeFile(outputPath, scripts);
         if (args.minified) {
-          scripts = uglify.minify(scripts, {
-            output: {
-              comments: true
-            },
-            fromString: true
-          });
-          utils.writeFile(dest.scripts + config.name + '.min.js', scripts.code);
+          scripts = uglify.minify(scripts, opts.uglify);
+          utils.writeFile(outputPath.replace('.js', '.min.js'), scripts.code);
         }
       });
     };
