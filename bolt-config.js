@@ -4,8 +4,13 @@ var pkg  = require('./package.json'),
   config = {
     name      : pkg.name,
     pluginOpts: {
-      coffee  : {},
-      cssnano : {
+      coffee     : {},
+      browsersync: {
+        server: 'public/',
+        files : 'public/',
+        port  : 1987
+      },
+      cssnano    : {
         core: false,
         discardComments: {
           removeAllButFirst: true
@@ -17,8 +22,8 @@ var pkg  = require('./package.json'),
           add: true
         }
       },
-      jade    : {
-        data  : {
+      jade       : {
+        data : {
           name       : pkg.name,
           description: pkg.description
         }
@@ -28,8 +33,7 @@ var pkg  = require('./package.json'),
       sources: {
         styles   : src + 'stylus/{style,*}.stylus',
         scripts  : src + 'coffee/**/*.coffee',
-        markup   : src + 'jade/*.jade',
-        overwatch: env + '**/*.*'
+        markup   : src + 'jade/*.jade'
       },
       destinations: {
         styles : env + 'css/',

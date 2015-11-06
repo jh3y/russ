@@ -22,12 +22,11 @@
             postcss([ nano(nanoOpts) ])
               .process(styles, {})
               .then(function (result) {
-                  fs.writeFileSync(dest, result.css);
+                  utils.writeFile(dest, result.css);
               });
           };
         stylus(files)
           .render(function(err, css) {
-            utils.checkPath(dest.styles);
             if (args.licensed) {
               css = utils.license(css);
             }
