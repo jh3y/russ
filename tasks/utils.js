@@ -37,9 +37,10 @@
         });
       });
     },
-    checkPath  = function(path) {
-      if (!fs.existsSync(path)){
-        var dirs  = path.split('/'),
+    writeFile  = function(path, content) {
+      var parentDir = path.substr(0, path.lastIndexOf('/'));
+      if (!fs.existsSync(parentDir)){
+        var dirs  = parentDir.split('/'),
           dirPath = '';
         while (dirs.length > 0) {
           var dir = dirs[0];
@@ -52,6 +53,7 @@
           dirs.shift();
         }
       }
+      fs.writeFileSync(path, content);
     },
     license = function(file, cb) {
       var license = fs.readFileSync('src/license.txt', 'utf-8');
@@ -61,7 +63,7 @@
       getArgs    : getArgs,
       readFiles  : readFiles,
       concatFiles: concatFiles,
-      checkPath  : checkPath,
+      writeFile  : writeFile,
       license    : license
     };
   module.exports = utils;

@@ -16,10 +16,9 @@
       }
       if (args.dir && args.exec) {
         fs.watch(args.dir, function(event, filename) {
-          console.log(event);
           if (filename) {
             console.log(filename, 'changed!');
-            compiler[args.exec]();
+            compiler[args.exec](filename);
           }
         });
       } else {

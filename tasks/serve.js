@@ -1,9 +1,10 @@
 (function(){
-    var fs  = require('fs'),
-    glob    = require('glob'),
-    utils   = require('./utils'),
+    var sync = require('browser-sync'),
+      config  = require('../bolt-config'),
+      opts    = config.pluginOpts,
     serve = function() {
-      /* CODE HERE */
+      var server = sync.create();
+      server.init(opts.browsersync);
     };
   if (require.main === module) {
     serve();

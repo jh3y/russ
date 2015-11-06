@@ -11,11 +11,10 @@
     compile = function() {
       utils.readFiles(src.scripts, true, function(files) {
         var scripts = coffee.compile(files, opts.coffee);
-        utils.checkPath(dest.scripts);
         if (args.licensed) {
           scripts = utils.license(scripts);
         }
-        fs.writeFileSync(dest.scripts + config.name + '.js', scripts);
+        utils.writeFile(dest.scripts + config.name + '.js', scripts);
         if (args.minified) {
           scripts = uglify.minify(scripts, {
             output: {
@@ -23,7 +22,7 @@
             },
             fromString: true
           });
-          fs.writeFileSync(dest.scripts + config.name + '.min.js', scripts.code);
+          utils.writeFile(dest.scripts + config.name + '.min.js', scripts.code);
         }
       });
     };
