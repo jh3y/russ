@@ -1,7 +1,7 @@
 (function(){
     var sync = require('browser-sync'),
-      config  = require('../bolt-config'),
-      opts    = config.pluginOpts,
+      config = require('../bolt-config'),
+      opts   = config.pluginOpts,
     serve = function() {
       var server = sync.create();
       server.init(opts.browsersync);

@@ -10,7 +10,7 @@
     utils   = require('./utils'),
     args    = utils.getArgs(process.argv),
     compile = function() {
-      utils.readFiles(src.styles, true, function(files) {
+      utils.grabFiles(src.styles, true, function(files) {
         var outputPath = dest.styles + config.name + '.css',
           nanoOpts = opts.cssnano,
           outputFile = function(styles, minified) {

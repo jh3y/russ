@@ -20,7 +20,7 @@
       }
       return result;
     },
-    readFiles = function(filesGlob, concatenated, callBack) {
+    grabFiles = function(filesGlob, concatenated, callBack) {
       glob(filesGlob, {nosort: true}, function(err, files){
         var result    = {};
         var readFile = function (filePath, cb) {
@@ -61,7 +61,7 @@
     };
     utils = {
       getArgs    : getArgs,
-      readFiles  : readFiles,
+      grabFiles  : grabFiles,
       concatFiles: concatFiles,
       writeFile  : writeFile,
       license    : license
