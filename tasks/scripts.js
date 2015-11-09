@@ -9,7 +9,7 @@
     utils   = require('./utils'),
     args    = utils.getArgs(process.argv),
     compile = function() {
-      utils.readFiles(src.scripts, true, function(files) {
+      utils.grabFiles(src.scripts, true, function(files) {
         var outputPath = dest.scripts + config.name + '.js',
           scripts = coffee.compile(files, opts.coffee);
         if (args.licensed) {
