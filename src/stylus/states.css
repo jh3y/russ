@@ -1,0 +1,10 @@
+.is--hidden {
+  display: none;
+}
+.is--red {
+  background: #00f;
+  color: #f00;
+}
+body {
+  background-color: #008000;
+}

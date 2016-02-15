@@ -1,0 +1,47 @@
+.bg--red {
+  background-color: #e74c3c;
+}
+.tx--red {
+  color: #e74c3c;
+}
+.bg--black {
+  background-color: #000;
+}
+.tx--black {
+  color: #000;
+}
+ul {
+  animation: spin 1s infinite linear;
+}
+@-moz-keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+@-webkit-keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+@-o-keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

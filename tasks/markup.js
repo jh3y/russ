@@ -1,6 +1,7 @@
 (function(){
     var fs  = require('fs'),
     jade    = require('jade'),
+    bsync   = require('browser-sync'),
     glob    = require('glob'),
     config  = require('../bolt-config'),
     src     = config.paths.sources,
@@ -8,22 +9,16 @@
     opts    = config.pluginOpts,
     utils   = require('./utils'),
     args    = utils.getArgs(process.argv),
-    compile = function(file) {
-      if (file) {
-        var markup = jade.renderFile('src/jade/' + file, opts.jade);
-        var outputName = file.replace('.jade', '.html');
-        utils.writeFile(dest.markup + outputName, markup);
-      } else {
-        glob(src.markup, {nosort: true}, function(err, files) {
-          for (var i = 0; i < files.length; i++) {
-            var markup = jade.renderFile(files[i], {
-              pretty: true
-            });
-            var filename = files[i].substr(files[i].lastIndexOf('/')).replace('.jade', '.html');
-            utils.writeFile(dest.markup + filename, markup);
-          }
-        });
-      }
+    compile = function() {
+      glob(src.markup, {nosort: true}, function(err, files) {
+        for (var i = 0; i < files.length; i++) {
+          var markup = jade.renderFile(files[i], {
+            pretty: true
+          });
+          var filename = files[i].substr(files[i].lastIndexOf('/')).replace('.jade', '.html');
+          utils.writeFile(dest.markup + filename, markup);
+        }
+      });
     };
   if (require.main === module) {
     compile();
