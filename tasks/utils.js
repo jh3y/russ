@@ -9,7 +9,6 @@
         .option('-e, --exec [value]', 'Execute function')
         .option('-n, --name [value]', 'Name')
         .option('-m, --minified', 'Minify output')
-        .option('-l, --licensed', 'License output')
         .parse(args);
       return program;
     },
@@ -54,17 +53,12 @@
         }
       }
       fs.writeFileSync(path, content);
-    },
-    license = function(file, cb) {
-      var license = fs.readFileSync('src/license.txt', 'utf-8');
-      return license + '\n' + file;
     };
     utils = {
       getArgs    : getArgs,
       grabFiles  : grabFiles,
       concatFiles: concatFiles,
-      writeFile  : writeFile,
-      license    : license
+      writeFile  : writeFile
     };
   module.exports = utils;
 }(this));

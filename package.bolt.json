@@ -1,0 +1,41 @@
+{
+  "name": "bolt",
+  "version": "0.0.0",
+  "description": "setting up a task runner with nothing but node!",
+  "scripts": {
+    "presetup": "say commencing setup",
+    "setup": "npm install -s",
+    "postsetup": "say setup complete!",
+    "watch:styles": "node ./tasks/watch -d src/stylus -e styles -n Stylus",
+    "watch:scripts": "node ./tasks/watch -d src/coffee -e scripts -n Coffee",
+    "watch:markup": "node ./tasks/watch -d src/jade -e markup -n Jade",
+    "watch": "npm run watch:styles -s & npm run watch:scripts -s & npm run watch:markup -s",
+    "build:styles": "node ./tasks/styles",
+    "build:scripts": "node ./tasks/scripts",
+    "build:markup": "node ./tasks/markup",
+    "build:complete": "npm run build:styles -s & npm run build:markup -s & npm run build:scripts -s",
+    "publish": "npm run build:styles -- -m & npm run build:markup -- -m & npm run build:scripts -- -m",
+    "serve": "node ./tasks/serve",
+    "develop": "npm run serve & npm run watch"
+  },
+  "author": "jh3y <jh3y@users.noreply.github.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "async": "^1.5.0",
+    "autoprefixer": "^6.0.3",
+    "browser-sync": "^2.9.12",
+    "coffee-script": "^1.10.0",
+    "commander": "^2.9.0",
+    "cssnano": "^3.3.2",
+    "glob": "^5.0.15",
+    "gulp-tap": "^0.1.3",
+    "jade": "^1.11.0",
+    "postcss": "^5.0.10",
+    "stylelint": "^2.0.0",
+    "stylus": "^0.52.4",
+    "uglify-js": "^2.5.0",
+    "vinyl-buffer": "^1.0.0",
+    "vinyl-file": "^2.0.0",
+    "vinyl-source-stream": "^1.1.0"
+  }
+}

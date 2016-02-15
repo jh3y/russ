@@ -15,7 +15,7 @@
         console.log(args.name, 'watcher started!');
       }
       if (args.dir && args.exec) {
-        fs.watch(args.dir, function(event, filename) {
+        fs.watch(args.dir, {persistent: true, recursive: true}, function(event, filename) {
           if (filename) {
             console.log(filename, 'changed!');
             compiler[args.exec](filename);

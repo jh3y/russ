@@ -12,9 +12,6 @@
       utils.grabFiles(src.scripts, true, function(files) {
         var outputPath = dest.scripts + config.name + '.js',
           scripts = coffee.compile(files, opts.coffee);
-        if (args.licensed) {
-          scripts = utils.license(scripts);
-        }
         utils.writeFile(outputPath, scripts);
         if (args.minified) {
           scripts = uglify.minify(scripts, opts.uglify);

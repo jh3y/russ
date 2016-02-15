@@ -1,5 +1,0 @@
-/*!
-  bolt - https://github.com/jh3y/bolt
-  @license MIT
-  jh3y (c) 2015
-!*/

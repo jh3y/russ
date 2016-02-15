@@ -27,9 +27,6 @@
           };
         stylus(files)
           .render(function(err, css) {
-            if (args.licensed) {
-              css = utils.license(css);
-            }
             outputFile(css, false);
             if (args.minified) {
               outputFile(css, true);
