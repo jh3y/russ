@@ -4,13 +4,10 @@ var pkg  = require('./package.json'),
   config = {
     name      : pkg.name,
     pluginOpts: {
-      coffee     : {
-        join: true
-      },
+      coffee     : {},
       browsersync: {
         name: 'boltServer',
         server: 'public/',
-        // files : 'public/',
         port  : 1987
       },
       cssnano    : {

@@ -17,20 +17,35 @@
     "stylelint": "^2.0.0",
     "stylus": "^0.52.4",
     "uglify-js": "^2.5.0",
+    "vinyl": "^1.1.1",
     "vinyl-buffer": "^1.0.0",
     "vinyl-file": "^2.0.0",
-    "vinyl-source-stream": "^1.1.0"
+    "vinyl-source-stream": "^1.1.0",
+    "watch": "^0.17.1",
+    "winston": "^2.2.0"
   },
   "config": {
     "commence_setup_msg": "commencing setup",
-    "complete_setup_msg": "setup complete"
+    "complete_setup_msg": "setup complete",
+    "scripts_dir": "src/coffee",
+    "scripts_task": "npm run build:scripts",
+    "scripts_dest": "public/js",
+    "scripts_concat": "src/coffee/*/*.coffee src/coffee/*.coffee",
+    "styles_dir": "src/stylus",
+    "styles_task": "npm run build:styles",
+    "styles_dest": "public/css"
   },
   "scripts": {
     "presetup": "say $npm_package_config_commence_setup_msg",
     "setup": "npm install",
     "postsetup": "say $npm_package_config_complete_setup_msg",
+    "tester": "node tasks/scripts.js",
     "prestyles:compile": "mkdir -pv public/css",
-    "styles:compile": "stylus src/stylus public/css",
-    "sass:compile": "node-sass src/sass -o public/css"
+    "build:styles": "stylus $npm_package_config_styles_dir --out $npm_package_config_styles_dest",
+    "watch:styles": "watch \"$npm_package_config_styles_task\" $npm_package_config_styles_dir",
+    "prebuild:scripts": "mkdir -pv public/js",
+    "build:scripts": "cat $npm_package_config_scripts_concat | coffee -c --stdio > $npm_package_config_scripts_dest/bolt.js",
+    "watch:scripts": "watch \"$npm_package_config_scripts_task\" $npm_package_config_scripts_dir",
+    "watch:dev": "npm run watch:scripts & npm run watch:styles"
   }
 }

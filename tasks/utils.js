@@ -2,37 +2,36 @@
   var fs    = require('fs'),
     program = require('commander'),
     glob    = require('glob'),
+    File    = require('vinyl'),
     async   = require('async'),
     getArgs = function(args) {
       program
-        .option('-d, --dir [value]', 'Specify a directory')
-        .option('-e, --exec [value]', 'Execute function')
-        .option('-n, --name [value]', 'Name')
         .option('-m, --minified', 'Minify output')
         .parse(args);
       return program;
     },
-    concatFiles = function(files, paths) {
-      var result = '';
-      for (var path in paths) {
-        result += files[paths[path]];
+    concatenate = function(files) {
+      var bufferList = [];
+      for (var file in files) {
+        bufferList.push(files[file].contents);
       }
-      return result;
+      return Buffer.concat(bufferList);
     },
-    grabFiles = function(filesGlob, concatenated, callBack) {
+    get = function(filesGlob, callBack) {
       glob(filesGlob, {nosort: true}, function(err, files){
-        var result    = {};
-        var readFile = function (filePath, cb) {
-          fs.readFile(filePath, 'utf-8', function(error, data) {
-            result[filePath] = data;
+        var readFiles = [];
+        var readFile  = function (filePath, cb) {
+          fs.readFile(filePath, function(error, data) {
+            var globFile = new File({
+              path: filePath,
+              contents: data
+            });
+            readFiles.push(globFile);
             cb();
           });
         };
-        async.map(files, readFile, function(err, results) {
-          if (concatenated) {
-            result = concatFiles(result, files);
-          }
-          callBack(result);
+        async.map(files, readFile, function() {
+          callBack(readFiles);
         });
       });
     },
@@ -56,8 +55,8 @@
     };
     utils = {
       getArgs    : getArgs,
-      grabFiles  : grabFiles,
-      concatFiles: concatFiles,
+      get        : get,
+      concatenate: concatenate,
       writeFile  : writeFile
     };
   module.exports = utils;
