@@ -1,5 +1,4 @@
-const fs    = require('fs'),
-  coffee  = require('coffee-script'),
+const coffee = require('coffee-script'),
   uglify  = require('uglify-js'),
   winston = require('winston'),
   config  = require('../bolt-config'),

@@ -6,6 +6,10 @@
     async   = require('async'),
     getArgs = function(args) {
       program
+        .option('-d, --dir [value]', 'Specify a directory')
+        .option('-e, --exec [value]', 'Execute function')
+        .option('-c, --compiler [value]', 'Node script to fire')
+        .option('-n, --name [value]', 'Name')
         .option('-m, --minified', 'Minify output')
         .parse(args);
       return program;
