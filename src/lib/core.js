@@ -19,6 +19,8 @@ class BoltInstance {
   runTask(name) {
     if (this.tasks[name])
       this.tasks[name].run();
+    else
+      throw Error(`no such task ${name}`);
   }
   info() {
     let taskList = '\n';
@@ -32,7 +34,11 @@ class BoltInstance {
     if (files.length === 0) throw new Error('No tasks in ./bolt.tasks/');
     for (const file of files) {
       const taskOpts = require(`${process.cwd()}/bolt.tasks/${file}`);
-      this.tasks[taskOpts.name] = new BoltTask(taskOpts, this);
+      if (Array.isArray(taskOpts))
+        for (const opt of taskOpts)
+          this.tasks[opt.name] = new BoltTask(opt, this);
+      else
+        this.tasks[taskOpts.name] = new BoltTask(taskOpts, this);
     }
   }
 }
