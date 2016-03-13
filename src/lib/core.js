@@ -8,6 +8,14 @@ class BoltInstance {
       * When creating an instance, we want to register tasks
       * gathered from "bolt.tasks" directory.
     */
+    try {
+      const runtime = '.boltrc';
+      const path = `${process.cwd()}/${runtime}`;
+      this.config = require(path);
+    } catch (err) {
+      throw Error('missing .boltrc file');
+    }
+
     this.tasks = {};
     const tasks = fs.readdirSync('bolt.tasks');
     try {
@@ -56,7 +64,6 @@ const defaults = {
 };
 
 /**
-  * whar does a task need to do?
   *
   * be Generic
   * be lightweight
@@ -64,20 +71,13 @@ const defaults = {
   * super flexible
   * no pipes, no config files, just pure script.
   *
-  * Can I do bolt scripts styles markup
-  * Should this actually be watch glob?
-  * bolt watch -d src/js -t scripts
-  * I think maybe because watching is quite a challenge. If you want to create
-  * a watcher, you create it as a task that runs???
-  * should it really be one task per file or can I have multiple?? as an array?
-  * can't differentiate between type array and type object, length???
-  *
 */
 class BoltTask {
   constructor(opts = defaults, daddy) {
     this.name = opts.name;
     this.doc  = opts.doc;
     this.func = opts.func;
+    this.parent = daddy;
     if (opts.deps.length > 0) {
       this.deps = [];
       for (const dep of opts.deps)
@@ -95,7 +95,7 @@ class BoltTask {
     // gather deps here and pass them in.
     if (this.func && typeof this.func === 'function')
       // convert array to parameters here and pass into function.
-      this.func(...this.deps);
+      this.func(...this.deps, this.parent.config);
   }
 }
 

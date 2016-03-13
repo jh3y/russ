@@ -1,3 +1,5 @@
+
+
 module.exports = [
   {
     name: 'compile:styles',
@@ -6,7 +8,7 @@ module.exports = [
       'winston'
     ],
     func: function(winny) {
-      winny.info('compiling away');
+      winny.info(msg);
     }
   },
   {

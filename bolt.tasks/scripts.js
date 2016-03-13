@@ -8,8 +8,6 @@ module.exports = [
     ],
     func: function(b, w) {
       w.info('hello');
-      b.info();
-      b.runTask('compile:styles');
     }
   },
   {
@@ -18,8 +16,9 @@ module.exports = [
     deps: [
       'winston'
     ],
-    func: function(w) {
+    func: function(w, c) {
       w.success('LINTED');
+      console.info(c);
     }
   },
   {
@@ -30,7 +29,7 @@ module.exports = [
       'gaze',
       'winston'
     ],
-    func: function(b, g, w) {
+    func: function(b, g, w, c) {
       g('./testSrc/**/*.js', (err, watcher) => {
         watcher.on('changed', (filepath) => {
           w.info(`${filepath} changed!`);
