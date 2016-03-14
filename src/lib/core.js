@@ -24,9 +24,15 @@ class BoltInstance {
       winston.error(err.toString());
     }
   }
-  runTask(name) {
+  runTask(name, env) {
     if (this.tasks[name])
-      this.tasks[name].run();
+      this.tasks[name].run(env)
+        .then(() => {
+          winston.info(`finished ${name}`);
+        })
+        .catch((err) => {
+          winston.error(`Error: ${err}`);
+        });
     else
       throw Error(`no such task ${name}`);
   }
@@ -44,9 +50,9 @@ class BoltInstance {
       const taskOpts = require(`${process.cwd()}/bolt.tasks/${file}`);
       if (Array.isArray(taskOpts))
         for (const opt of taskOpts)
-          this.tasks[opt.name] = new BoltTask(opt, this);
+          this.tasks[opt.name] = new BoltTask(this, opt);
       else
-        this.tasks[taskOpts.name] = new BoltTask(taskOpts, this);
+        this.tasks[taskOpts.name] = new BoltTask(this, taskOpts);
     }
   }
 }
@@ -73,29 +79,31 @@ const defaults = {
   *
 */
 class BoltTask {
-  constructor(opts = defaults, daddy) {
+  constructor(parent, opts = defaults) {
     this.name = opts.name;
     this.doc  = opts.doc;
     this.func = opts.func;
-    this.parent = daddy;
+    this.parent = parent;
     if (opts.deps.length > 0) {
       this.deps = [];
       for (const dep of opts.deps)
         if (dep !== 'bolt')
           this.deps.push(require(dep));
         else
-          this.deps.push(daddy);
+          this.deps.push(parent);
     }
   }
   info() {
     winston.info(`${this.name}: ${this.doc}`);
   }
-  run() {
-    winston.info(`Running ${this.name}`);
-    // gather deps here and pass them in.
-    if (this.func && typeof this.func === 'function')
-      // convert array to parameters here and pass into function.
-      this.func(...this.deps, this.parent.config);
+  run(env) {
+    return new Promise((resolve, reject) => {
+      winston.info(`Running ${this.name}`);
+      // gather deps here and pass them in.
+      if (this.func && typeof this.func === 'function')
+        // convert array to parameters here and pass into function.
+        this.func(...this.deps, env, this.parent.config, resolve, reject);
+    });
   }
 }
 

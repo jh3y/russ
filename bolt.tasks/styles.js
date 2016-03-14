@@ -1,5 +1,3 @@
-
-
 module.exports = [
   {
     name: 'compile:styles',
@@ -7,8 +5,20 @@ module.exports = [
     deps: [
       'winston'
     ],
-    func: function(winny) {
-      winny.info(msg);
+    func: function(winny, env, config, resolve) {
+      winny.info('hey');
+      resolve();
+    }
+  },
+  {
+    name: 'lint:styles',
+    doc: 'lint style src',
+    deps: [
+      'winston'
+    ],
+    func: (w, env, config, resolve) => {
+      w.info('LINTED');
+      resolve();
     }
   },
   {
@@ -22,9 +32,10 @@ module.exports = [
     func: function(w, b, g) {
       g('./testSrc/**/*.js', (err, watcher) => {
         watcher.on('changed', (file) => {
+          w.info(`${file} changed!`);
           b.runTask('compile:styles');
         });
       });
     }
   }
-]
+];

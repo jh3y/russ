@@ -1,3 +1,5 @@
+// env, config, resolve, reject
+
 module.exports = [
   {
     name: 'compile:scripts',
@@ -16,9 +18,12 @@ module.exports = [
     deps: [
       'winston'
     ],
-    func: function(w, c) {
+    func: function(w, env, c, resolve, reject) {
       w.success('LINTED');
-      console.info(c);
+      w.info(`Environment: ${env}`);
+      setTimeout(() => {
+        reject('There was a linter error');
+      }, 1000);
     }
   },
   {
@@ -29,7 +34,7 @@ module.exports = [
       'gaze',
       'winston'
     ],
-    func: function(b, g, w, c) {
+    func: function(b, g, w) {
       g('./testSrc/**/*.js', (err, watcher) => {
         watcher.on('changed', (filepath) => {
           w.info(`${filepath} changed!`);

@@ -56,7 +56,8 @@ const setUpLogger = () => {
     // loop over commands and try to run them.
     for (const task of commands)
       try {
-        boltInstance.runTask(task);
+        const env = program.env;
+        boltInstance.runTask(task, env);
       } catch (err) {
         winston.error(err.toString());
       }
@@ -72,6 +73,7 @@ const setUpLogger = () => {
       */
     program
       .version(pkg.version)
+      .option('-e --env <value>', 'defines task runtime env')
       .arguments('[command...]')
       .action(handleCommand);
 
