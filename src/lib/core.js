@@ -69,15 +69,6 @@ const defaults = {
   }
 };
 
-/**
-  *
-  * be Generic
-  * be lightweight
-  * self documented
-  * super flexible
-  * no pipes, no config files, just pure script.
-  *
-*/
 class BoltTask {
   constructor(parent, opts = defaults) {
     this.name = opts.name;
