@@ -44,16 +44,9 @@ const setUpLogger = () => {
     winston.setLevels(PROPS.LOGGER_CONFIG.LEVELS);
   },
   handle = (opts) => {
-    // When no options/commands are passed to bolt.
     if (opts.rawArgs.length === 2) boltInstance.info();
   },
-  /**
-    * Commands are RESERVED words. They can't be used as a task name.
-    *
-    * INFO, RUN, CREATE
-  */
   handleCommand = (commands) => {
-    // loop over commands and try to run them.
     for (const task of commands)
       try {
         const env = program.env;
@@ -63,14 +56,6 @@ const setUpLogger = () => {
       }
   },
   setUpInterface = () => {
-      // bolt run --name yes please
-
-      /**
-        * What do I want it to do.
-        *
-        * bolt scripts:compile
-        * bolt scripts:watch
-      */
     program
       .version(pkg.version)
       .option('-e --env <value>', 'defines task runtime env')
@@ -79,7 +64,6 @@ const setUpLogger = () => {
 
   };
 
-// Start the show...
 try {
   setUpLogger();
   setUpInterface();

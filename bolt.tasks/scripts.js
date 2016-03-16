@@ -8,8 +8,9 @@ module.exports = [
       'bolt',
       'winston'
     ],
-    func: function(b, w) {
+    func: function(b, w, e, c, resolve) {
       w.info('hello');
+      resolve();
     }
   },
   {

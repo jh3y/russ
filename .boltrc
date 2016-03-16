@@ -1,6 +1,6 @@
 var pkg  = require('./package.json'),
   env    = 'public/',
-  src    = 'src/',
+  src    = 'testSrc/',
   config = {
     name      : pkg.name,
     pluginOpts: {
@@ -11,7 +11,7 @@ var pkg  = require('./package.json'),
         port  : 1987
       },
       cssnano    : {
-        core: false,
+        core: true,
         discardComments: {
           removeAllButFirst: true
         },
@@ -37,7 +37,7 @@ var pkg  = require('./package.json'),
     },
     paths     : {
       sources: {
-        styles   : src + 'stylus/{style,*}.stylus',
+        styles   : src + 'stylus/style.styl',
         scripts  : src + 'coffee/**/{greet,*}.coffee',
         markup   : src + 'jade/*.jade'
       },

@@ -41,13 +41,18 @@
   },
   "keywords": [],
   "devDependencies": {
+    "autoprefixer": "^6.3.3",
     "babel-cli": "^6.5.1",
     "babel-eslint": "^5.0.0",
     "babel-polyfill": "^6.5.0",
     "babel-preset-es2015": "^6.5.0",
     "browser-sync": "^2.11.1",
+    "cssnano": "^3.5.2",
     "eslint": "^2.2.0",
     "mocha": "^2.4.5",
+    "postcss": "^5.0.19",
+    "stylint": "^1.3.6",
+    "stylus": "^0.54.2",
     "vinyl-buffer": "^1.0.0",
     "vinyl-file": "^2.0.0",
     "vinyl-source-stream": "^1.1.0"

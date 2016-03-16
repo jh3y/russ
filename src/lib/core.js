@@ -25,16 +25,34 @@ class BoltInstance {
     }
   }
   runTask(name, env) {
-    if (this.tasks[name])
-      this.tasks[name].run(env)
-        .then(() => {
-          winston.info(`finished ${name}`);
-        })
-        .catch((err) => {
-          winston.error(`Error: ${err}`);
-        });
-    else
-      throw Error(`no such task ${name}`);
+    const run = (name) => {
+      if (this.tasks[name])
+        this.tasks[name].run(env)
+          .then(() => {
+            winston.info(`finished ${name}`);
+            if (tasks.next) {
+              const nextTask = tasks.next();
+              if (!nextTask.done)
+                run(nextTask.value);
+            }
+          })
+          .catch((err) => {
+            winston.error(`Error: ${err}`);
+          });
+      else
+        throw Error('Whoah no such task!');
+    };
+
+    const task = this.tasks[name];
+    let tasks = [task.pre, name, task.post];
+    const clean = (a) => {
+      return a;
+    };
+    tasks = tasks.filter(clean);
+    if (tasks.length > 1)
+      tasks = tasks[Symbol.iterator]();
+    // Iterate through tasks
+    run((tasks.next) ? tasks.next().value : tasks[0]);
   }
   info() {
     let taskList = '\n';
@@ -69,11 +87,10 @@ const defaults = {
   }
 };
 
+// name, doc, func, pre, post
 class BoltTask {
   constructor(parent, opts = defaults) {
-    this.name = opts.name;
-    this.doc  = opts.doc;
-    this.func = opts.func;
+    Object.assign(this, opts);
     this.parent = parent;
     if (opts.deps.length > 0) {
       this.deps = [];
@@ -90,10 +107,13 @@ class BoltTask {
   run(env) {
     return new Promise((resolve, reject) => {
       winston.info(`Running ${this.name}`);
-      // gather deps here and pass them in.
       if (this.func && typeof this.func === 'function')
-        // convert array to parameters here and pass into function.
-        this.func(...this.deps, env, this.parent.config, resolve, reject);
+        this.func(...this.deps, {
+          env: env,
+          config: this.parent.config,
+          resolve: resolve,
+          reject: reject
+        });
     });
   }
 }
