@@ -19,7 +19,7 @@ class BoltInstance {
     this.tasks = {};
     const tasks = fs.readdirSync('bolt.tasks');
     try {
-      this.registerTasks(tasks);
+      this.register(tasks);
     } catch (err) {
       winston.error(err.toString());
     }
@@ -43,16 +43,51 @@ class BoltInstance {
         throw Error('Whoah no such task!');
     };
 
-    const task = this.tasks[name];
-    let tasks = [task.pre, name, task.post];
-    const clean = (a) => {
-      return a;
-    };
-    tasks = tasks.filter(clean);
-    if (tasks.length > 1)
-      tasks = tasks[Symbol.iterator]();
-    // Iterate through tasks
-    run((tasks.next) ? tasks.next().value : tasks[0]);
+    // Here need to work out the tasks that need to be ran.
+    // let tasks = [task.pre, name, task.post];
+    // let tasksToRun = [];
+    // const clean = (a) => {
+    //   return a && (tasksToRun.indexOf(a) === -1);
+    // };
+    // tasksToRun = tasks.filter(clean);
+    // console.log(tasksToRun);
+
+    let task = this.tasks[name];
+    let tasksToRun = [];
+    // Need to do some recursion here on the first in the list...
+    let getList = (name) => {
+      if (name) {
+        const task = this.tasks[name];
+        let tasks = [task.pre, task.name, task.post].filter(clean);
+        tasks = task[Symbol.iterator]();
+      }
+    }
+
+    getList(name);
+
+
+    // task = new BoltTask(this, task);
+    // try {
+    //   task.run(env)
+    //     .then(() => {
+    //       winston.info(`Finished ${name}`);
+    //     })
+    //     .catch((err) => {
+    //       winston.error(`Not today ${err}`);
+    //     });
+    // } catch (err) {
+    //   winston.silly(`Not now bolt ${err}`);
+    // }
+
+    // let tasks = [task.pre, name, task.post];
+    // const clean = (a) => {
+    //   return a;
+    // };
+    // tasks = tasks.filter(clean);
+    // if (tasks.length > 1)
+    //   tasks = tasks[Symbol.iterator]();
+    // // Iterate through tasks
+    // run((tasks.next) ? tasks.next().value : tasks[0]);
   }
   info() {
     let taskList = '\n';
@@ -62,15 +97,19 @@ class BoltInstance {
     const header = 'Available task to run:\n';
     winston.info(`${header}${taskList}`);
   }
-  registerTasks(files) {
+  register(files) {
     if (files.length === 0) throw new Error('No tasks in ./bolt.tasks/');
     for (const file of files) {
       const taskOpts = require(`${process.cwd()}/bolt.tasks/${file}`);
+      // Instead here we actually want to create a large reference Object
+      // that can then be used when the amount of tasks is confirmed
       if (Array.isArray(taskOpts))
         for (const opt of taskOpts)
-          this.tasks[opt.name] = new BoltTask(this, opt);
+          // this.tasks[opt.name] = new BoltTask(this, opt);
+          this.tasks[opt.name] = opt;
       else
-        this.tasks[taskOpts.name] = new BoltTask(this, taskOpts);
+        // this.tasks[taskOpts.name] = new BoltTask(this, taskOpts);
+        this.tasks[taskOpts.name] = taskOpts;
     }
   }
 }
@@ -95,14 +134,8 @@ class BoltTask {
     if (opts.deps.length > 0) {
       this.deps = [];
       for (const dep of opts.deps)
-        if (dep !== 'bolt')
-          this.deps.push(require(dep));
-        else
-          this.deps.push(parent);
+        this.deps.push(require(dep));
     }
-  }
-  info() {
-    winston.info(`${this.name}: ${this.doc}`);
   }
   run(env) {
     return new Promise((resolve, reject) => {

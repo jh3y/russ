@@ -5,10 +5,9 @@ module.exports = [
     name: 'compile:scripts',
     doc : 'compiles runtime JavaScript files',
     deps: [
-      'bolt',
       'winston'
     ],
-    func: function(b, w, e, c, resolve) {
+    func: function(w, e, c, resolve) {
       w.info('hello');
       resolve();
     }
@@ -19,11 +18,11 @@ module.exports = [
     deps: [
       'winston'
     ],
-    func: function(w, env, c, resolve, reject) {
+    func: function(w, instance) {
       w.success('LINTED');
-      w.info(`Environment: ${env}`);
+      w.info(`Environment: ${instance.env}`);
       setTimeout(() => {
-        reject('There was a linter error');
+        instance.reject('There was a linter error');
       }, 1000);
     }
   },
