@@ -2,6 +2,7 @@ module.exports = [
   {
     name: 'compile:styles',
     doc : 'compiles Stylus',
+    pre : 'lint:styles',
     deps: [
       'fs',
       'mkdirp',
@@ -49,8 +50,17 @@ module.exports = [
     ],
     func: (fs, s, w, instance) => {
       const rc = JSON.parse(fs.readFileSync('.stylintrc', 'utf-8'));
-      s('testSrc/stylus/', rc).create();
-      instance.resolve();
+      s('testSrc/stylus/', rc)
+        .methods({
+          done: function () {
+            if (this.cache.errs)
+              for(const error of this.cache.errs) w.error(error);
+            if (this.cache.warnings)
+              for(const warning of this.cache.warnings) w.warn(`\n\n${warning}\n`);
+            instance.resolve();
+          }
+        })
+        .create();
     }
   },
   {

@@ -1,21 +1,15 @@
 module.exports = {
   name: 'server',
   doc: 'set up BrowserSync static server with liveReload and CSS injection',
-  pre: [
-    'lint:scripts'
-  ],
-  post: [
-
-  ],
   deps: [
     'browser-sync',
     'vinyl-source-stream',
     'vinyl-buffer',
     'vinyl-file'
   ],
-  func: (bs, vss, vb, vf, env, config) => {
+  func: (bs, vss, vb, vf, bolt) => {
     const server = bs.create();
-    const pluginOpts = config.pluginOpts;
+    const pluginOpts = bolt.config.pluginOpts;
     server.init(pluginOpts.browsersync);
     server.watch('public/**/*.*', (evt, file) => {
       if (evt === 'change' && file.indexOf('.css') === -1)
