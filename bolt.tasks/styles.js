@@ -11,7 +11,7 @@ module.exports = [
       'stylus',
       'winston'
     ],
-    func: function(fs, m, nano, p, postcss, s, w, instance) {
+    func: (fs, m, nano, p, postcss, s, w, instance) => {
       'use strict';
       const src = instance.config.paths.sources;
       const dest = instance.config.paths.destinations;
@@ -52,8 +52,9 @@ module.exports = [
         w.silly('LINTED');
         instance.resolve();
       };
-      const rc = JSON.parse(fs.readFileSync('.stylintrc', 'utf-8'));
-      s('testSrc/stylus/', rc, cb).create();
+      // const rc = JSON.parse(fs.readFileSync('.stylintrc', 'utf-8'));
+      // s('testSrc/stylus/', rc, cb).create();
+      s('testSrc/stylus/', {}, instance.resolve).create();
     }
   },
   {
@@ -61,14 +62,13 @@ module.exports = [
     doc: 'watch and compile style files',
     deps: [
       'winston',
-      'bolt',
       'gaze'
     ],
-    func: function(w, b, g) {
+    func: function(w, g, b) {
       g('./testSrc/**/*.styl', (err, watcher) => {
-        watcher.on('changed', (file) => {
+        watcher.on('changed', function(file) {
           w.info(`${file} changed!`);
-          b.runTask('compile:styles');
+          b.run('compile:styles');
         });
       });
     }

@@ -19,7 +19,7 @@ module.exports = [
       'winston'
     ],
     func: (w, instance) => {
-      setTimeout(instance.resolve, 100);
+      setTimeout(instance.resolve, 10000);
     }
   },
   {
@@ -31,7 +31,7 @@ module.exports = [
       'winston'
     ],
     func: (w, instance) => {
-      setTimeout(instance.resolve, 100);
+      setTimeout(instance.resolve, 3000);
     }
   },
   {
@@ -42,7 +42,7 @@ module.exports = [
       'winston'
     ],
     func: (w, instance) => {
-      setTimeout(instance.resolve, 100);
+      setTimeout(instance.resolve, 1000);
     }
   }
 ];

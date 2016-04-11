@@ -24,12 +24,36 @@ class BoltInstance {
       winston.error(err.toString());
     }
   }
-  runTask(name, env) {
+  runTask(name) {
+    const clean = (a) => {
+      return a && (tasksToRun.indexOf(a) === -1);
+    };
+    let task = this.tasks[name];
+    let tasksToRun = [];
+    // Need to do some recursion here on the first in the list...
+    let getList = (name, parent) => {
+      if (name) {
+        if (!parent)
+          tasksToRun.push(name);
+        else {
+          const parentTask = this.tasks[parent];
+          const pIdx = tasksToRun.indexOf(parent);
+          const idx = (name === parentTask.post) ? (pIdx + 1): pIdx;
+          tasksToRun.splice(idx, 0, name);
+        }
+        // Calculate pre/post
+        const task = this.tasks[name];
+        let tasks = [task.pre, task.post].filter(clean);
+        for (const t of tasks) getList(t, name);
+      }
+    }
+    getList(name);
     const run = (name) => {
-      if (this.tasks[name])
-        this.tasks[name].run(env)
+      try {
+        const task = new BoltTask(this, this.tasks[name]);
+        task.run()
           .then(() => {
-            winston.info(`finished ${name}`);
+            winston.info(`Finished ${name}`);
             if (tasks.next) {
               const nextTask = tasks.next();
               if (!nextTask.done)
@@ -39,55 +63,13 @@ class BoltInstance {
           .catch((err) => {
             winston.error(`Error: ${err}`);
           });
-      else
-        throw Error('Whoah no such task!');
-    };
-
-    // Here need to work out the tasks that need to be ran.
-    // let tasks = [task.pre, name, task.post];
-    // let tasksToRun = [];
-    // const clean = (a) => {
-    //   return a && (tasksToRun.indexOf(a) === -1);
-    // };
-    // tasksToRun = tasks.filter(clean);
-    // console.log(tasksToRun);
-
-    let task = this.tasks[name];
-    let tasksToRun = [];
-    // Need to do some recursion here on the first in the list...
-    let getList = (name) => {
-      if (name) {
-        const task = this.tasks[name];
-        let tasks = [task.pre, task.name, task.post].filter(clean);
-        tasks = task[Symbol.iterator]();
+      } catch (err) {
+        winston.silly(`Whoah whoah ${err}`);
       }
-    }
-
-    getList(name);
-
-
-    // task = new BoltTask(this, task);
-    // try {
-    //   task.run(env)
-    //     .then(() => {
-    //       winston.info(`Finished ${name}`);
-    //     })
-    //     .catch((err) => {
-    //       winston.error(`Not today ${err}`);
-    //     });
-    // } catch (err) {
-    //   winston.silly(`Not now bolt ${err}`);
-    // }
-
-    // let tasks = [task.pre, name, task.post];
-    // const clean = (a) => {
-    //   return a;
-    // };
-    // tasks = tasks.filter(clean);
-    // if (tasks.length > 1)
-    //   tasks = tasks[Symbol.iterator]();
-    // // Iterate through tasks
-    // run((tasks.next) ? tasks.next().value : tasks[0]);
+    };
+    const tasks = tasksToRun[Symbol.iterator]();
+    // Iterate through tasks
+    run((tasks.next) ? tasks.next().value : tasks[0]);
   }
   info() {
     let taskList = '\n';
@@ -101,34 +83,30 @@ class BoltInstance {
     if (files.length === 0) throw new Error('No tasks in ./bolt.tasks/');
     for (const file of files) {
       const taskOpts = require(`${process.cwd()}/bolt.tasks/${file}`);
-      // Instead here we actually want to create a large reference Object
-      // that can then be used when the amount of tasks is confirmed
       if (Array.isArray(taskOpts))
         for (const opt of taskOpts)
-          // this.tasks[opt.name] = new BoltTask(this, opt);
           this.tasks[opt.name] = opt;
       else
-        // this.tasks[taskOpts.name] = new BoltTask(this, taskOpts);
         this.tasks[taskOpts.name] = taskOpts;
     }
   }
 }
 
 
-const defaults = {
-  name: 'compile:scripts',
-  doc : 'compiles runtime JavaScript files',
-  deps: [
-    'winston'
-  ],
-  func: function(w) {
-    w.info('hello');
-  }
-};
+// const defaults = {
+//   name: 'compile:scripts',
+//   doc : 'compiles runtime JavaScript files',
+//   deps: [
+//     'winston'
+//   ],
+//   func: function(w) {
+//     w.info('hello');
+//   }
+// };
 
 // name, doc, func, pre, post
 class BoltTask {
-  constructor(parent, opts = defaults) {
+  constructor(parent, opts) {
     Object.assign(this, opts);
     this.parent = parent;
     if (opts.deps.length > 0) {
@@ -145,7 +123,8 @@ class BoltTask {
           env: env,
           config: this.parent.config,
           resolve: resolve,
-          reject: reject
+          reject: reject,
+          run: this.parent.runTask.bind(this.parent)
         });
     });
   }
