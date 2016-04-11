@@ -48,13 +48,9 @@ module.exports = [
       'winston'
     ],
     func: (fs, s, w, instance) => {
-      const cb = () => {
-        w.silly('LINTED');
-        instance.resolve();
-      };
-      // const rc = JSON.parse(fs.readFileSync('.stylintrc', 'utf-8'));
-      // s('testSrc/stylus/', rc, cb).create();
-      s('testSrc/stylus/', {}, instance.resolve).create();
+      const rc = JSON.parse(fs.readFileSync('.stylintrc', 'utf-8'));
+      s('testSrc/stylus/', rc).create();
+      instance.resolve();
     }
   },
   {

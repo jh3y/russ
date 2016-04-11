@@ -44,5 +44,21 @@ module.exports = [
     func: (w, instance) => {
       setTimeout(instance.resolve, 1000);
     }
+  },
+  {
+    name: 'E',
+    doc: 'runs compile:scripts followed by compile:styles',
+    sequence: [
+      'compile:scripts',
+      'compile:styles'
+    ]
+  },
+  {
+    name: 'F',
+    doc: 'runs watch:scripts and watch:styles simultaneously',
+    concurrent: [
+      'watch:scripts',
+      'watch:styles'
+    ]
   }
 ];

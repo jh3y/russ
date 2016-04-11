@@ -1,5 +1,3 @@
-// env, config, resolve, reject
-
 module.exports = [
   {
     name: 'compile:scripts',
@@ -7,9 +5,9 @@ module.exports = [
     deps: [
       'winston'
     ],
-    func: function(w, e, c, resolve) {
+    func: function(w, instance) {
       w.info('hello');
-      resolve();
+      instance.resolve();
     }
   },
   {
@@ -30,14 +28,14 @@ module.exports = [
     name: 'watch:scripts',
     doc: 'watch for script source changes then run and compile',
     deps: [
-      'bolt',
       'gaze',
       'winston'
     ],
-    func: function(b, g, w) {
+    func: function(g, w, b) {
       g('./testSrc/**/*.js', (err, watcher) => {
         watcher.on('changed', (filepath) => {
           w.info(`${filepath} changed!`);
+          b.run('compile:scripts');
         });
       });
     }

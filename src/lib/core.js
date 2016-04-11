@@ -47,7 +47,11 @@ class BoltInstance {
         for (const t of tasks) getList(t, name);
       }
     }
-    getList(name);
+    if (task.sequence && task.sequence.length > 0)
+      for (const t of task.sequence) getList(t);
+    else
+      getList(name);
+
     const run = (name) => {
       try {
         const task = new BoltTask(this, this.tasks[name]);
@@ -68,8 +72,11 @@ class BoltInstance {
       }
     };
     const tasks = tasksToRun[Symbol.iterator]();
-    // Iterate through tasks
-    run((tasks.next) ? tasks.next().value : tasks[0]);
+
+    if (task.concurrent && task.concurrent.length > 0)
+      for (const t of task.concurrent) run(t);
+    else
+      run((tasks.next) ? tasks.next().value : tasks[0]);
   }
   info() {
     let taskList = '\n';
