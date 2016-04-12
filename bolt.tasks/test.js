@@ -46,6 +46,16 @@ module.exports = [
     }
   },
   {
+    name: 'Z',
+    doc: 'Boilerplate half second timeout log',
+    deps: [
+      'winston'
+    ],
+    func: (w, instance) => {
+      setTimeout(instance.resolve, 500);
+    }
+  },
+  {
     name: 'E',
     doc: 'runs compile:scripts followed by compile:styles',
     sequence: [

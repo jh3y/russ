@@ -49,14 +49,23 @@ module.exports = [
       'winston'
     ],
     func: (fs, s, w, instance) => {
+      'use strict';
       const rc = JSON.parse(fs.readFileSync('.stylintrc', 'utf-8'));
       s('testSrc/stylus/', rc)
         .methods({
           done: function () {
-            if (this.cache.errs)
-              for(const error of this.cache.errs) w.error(error);
-            if (this.cache.warnings)
-              for(const warning of this.cache.warnings) w.warn(`\n\n${warning}\n`);
+            if (this.cache.errs) {
+              let errorMsg = '';
+              for (const error of this.cache.errs)
+                errorMsg += `\n\n${error}\n`;
+              w.error(errorMsg);
+            }
+            if (this.cache.warnings) {
+              let warningMsg = '';
+              for (const warning of this.cache.warnings)
+                warningMsg += `\n\n${warning}\n`;
+              w.warn(warningMsg);
+            }
             instance.resolve();
           }
         })

@@ -34,11 +34,15 @@ let boltInstance;
 const setUpLogger = () => {
     winston.remove(winston.transports.Console);
     winston.add(winston.transports.Console, {
-      level    : 'silly',
       colorize : true,
-      formatter: function(options) {
-        const color = PROPS.LOGGER_CONFIG.COLORS[options.level];
-        return `[${pkg.name.yellow}] ${options.message[color]}`;
+      formatter: function(opts) {
+        const dur = opts.meta.durationMs;
+        const stamp = pkg.name.yellow;
+        const color = PROPS.LOGGER_CONFIG.COLORS[opts.level];
+        const msg = (dur) ? `Finished ${opts.message}`[color]: opts.message[color];
+        const durMsg = (dur) ? `in ${dur / 1000}s` : '';
+        const output = `[${stamp}] ${msg} ${durMsg}`;
+        return output;
       }
     });
     winston.setLevels(PROPS.LOGGER_CONFIG.LEVELS);

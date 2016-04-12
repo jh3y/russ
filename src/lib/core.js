@@ -24,11 +24,12 @@ class BoltInstance {
       winston.error(err.toString());
     }
   }
-  runTask(name) {
+  runTask(name, env) {
     const clean = (a) => {
       return a && (tasksToRun.indexOf(a) === -1);
     };
     let task = this.tasks[name];
+    if (!task) throw Error('No such task...');
     let tasksToRun = [];
     // Need to do some recursion here on the first in the list...
     let getList = (name, parent) => {
@@ -55,15 +56,17 @@ class BoltInstance {
     const run = (name) => {
       try {
         const task = new BoltTask(this, this.tasks[name]);
-        task.run()
-          .then(() => {
-            winston.info(`Finished ${name}`);
-            if (tasks.next) {
-              const nextTask = tasks.next();
-              if (!nextTask.done)
-                run(nextTask.value);
+        task.run(env)
+          .then(
+            () => {
+              winston.profile(name);
+              if (tasks.next) {
+                const nextTask = tasks.next();
+                if (!nextTask.done)
+                  run(nextTask.value);
+              }
             }
-          })
+          )
           .catch((err) => {
             winston.error(`Error: ${err}`);
           });
@@ -99,19 +102,6 @@ class BoltInstance {
   }
 }
 
-
-// const defaults = {
-//   name: 'compile:scripts',
-//   doc : 'compiles runtime JavaScript files',
-//   deps: [
-//     'winston'
-//   ],
-//   func: function(w) {
-//     w.info('hello');
-//   }
-// };
-
-// name, doc, func, pre, post
 class BoltTask {
   constructor(parent, opts) {
     Object.assign(this, opts);
@@ -125,6 +115,7 @@ class BoltTask {
   run(env) {
     return new Promise((resolve, reject) => {
       winston.info(`Running ${this.name}`);
+      winston.profile(this.name);
       if (this.func && typeof this.func === 'function')
         this.func(...this.deps, {
           env: env,

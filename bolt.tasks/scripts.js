@@ -20,7 +20,7 @@ module.exports = [
       w.success('LINTED');
       w.info(`Environment: ${instance.env}`);
       setTimeout(() => {
-        instance.reject('There was a linter error');
+        // @TODO Find out how to throw an ERROR here and have bolt catch it.
       }, 1000);
     }
   },
