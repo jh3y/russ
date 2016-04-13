@@ -1,6 +1,6 @@
 PHONY: help
 
-NPM = @./node_modules/.bin
+NPM = ./node_modules/.bin
 BABEL = $(NPM)/babel
 MOCHA = $(NPM)/mocha
 ESLINT = $(NPM)/eslint
