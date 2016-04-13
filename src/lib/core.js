@@ -8,11 +8,12 @@ class BoltInstance {
       * When creating an instance, we want to register tasks
       * gathered from "bolt.tasks" directory.
     */
+    const runtime = '.boltrc';
+    const path = `${process.cwd()}/${runtime}`;
     try {
-      const runtime = '.boltrc';
-      const path = `${process.cwd()}/${runtime}`;
       this.config = require(path);
     } catch (err) {
+      winston.error('no way');
       throw Error('missing .boltrc file');
     }
 
@@ -64,6 +65,8 @@ class BoltInstance {
                 const nextTask = tasks.next();
                 if (!nextTask.done)
                   run(nextTask.value);
+                else
+                  winston.profile('tasks')
               }
             }
           )
@@ -78,8 +81,10 @@ class BoltInstance {
 
     if (task.concurrent && task.concurrent.length > 0)
       for (const t of task.concurrent) run(t);
-    else
+    else {
+      if (task.sequence) winston.profile('tasks');
       run((tasks.next) ? tasks.next().value : tasks[0]);
+    }
   }
   info() {
     let taskList = '\n';
@@ -101,7 +106,7 @@ class BoltInstance {
     }
   }
 }
-
+//
 class BoltTask {
   constructor(parent, opts) {
     Object.assign(this, opts);

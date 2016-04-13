@@ -21,6 +21,8 @@ module.exports = [
       w.info(`Environment: ${instance.env}`);
       setTimeout(() => {
         // @TODO Find out how to throw an ERROR here and have bolt catch it.
+        // throw Error('REALLY??');
+        instance.reject('hhhhmmm');
       }, 1000);
     }
   },

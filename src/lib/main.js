@@ -34,13 +34,21 @@ let boltInstance;
 const setUpLogger = () => {
     winston.remove(winston.transports.Console);
     winston.add(winston.transports.Console, {
+      level: 'silly',
       colorize : true,
       formatter: function(opts) {
+        const stampColor = (opts.level === 'error' || opts.level === 'success') ? PROPS.LOGGER_CONFIG.COLORS[opts.level]: 'yellow';
         const dur = opts.meta.durationMs;
-        const stamp = pkg.name.yellow;
+        const stamp = pkg.name[stampColor];
         const color = PROPS.LOGGER_CONFIG.COLORS[opts.level];
         const msg = (dur) ? `Finished ${opts.message}`[color]: opts.message[color];
-        const durMsg = (dur) ? `in ${dur / 1000}s` : '';
+        let durColor;
+        if (dur) {
+          durColor = 'green';
+          if ((dur / 1000) > 2) durColor = 'yellow';
+          if ((dur / 1000) > 5) durColor = 'red';
+        }
+        const durMsg = (dur) ? `${'in'.blue} ${(dur / 1000).toString()[durColor] + 's'.blue}` : '';
         const output = `[${stamp}] ${msg} ${durMsg}`;
         return output;
       }

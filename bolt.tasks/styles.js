@@ -54,13 +54,13 @@ module.exports = [
       s('testSrc/stylus/', rc)
         .methods({
           done: function () {
-            if (this.cache.errs) {
+            if (this.cache.errs && this.cache.errs.length) {
               let errorMsg = '';
               for (const error of this.cache.errs)
                 errorMsg += `\n\n${error}\n`;
               w.error(errorMsg);
             }
-            if (this.cache.warnings) {
+            if (this.cache.warnings && this.cache.warnings.length) {
               let warningMsg = '';
               for (const warning of this.cache.warnings)
                 warningMsg += `\n\n${warning}\n`;
