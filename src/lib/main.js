@@ -4,40 +4,37 @@
   * @author jh3y 2016
   * @license MIT
 */
-const pkg = require('../package.json'),
-  program = require('commander'),
-  setup = require('./setup'),
+const pkg      = require('../package.json'),
+  program      = require('commander'),
+  setup        = require('./setup'),
   BoltInstance = require('./core/instance'),
-  winston = require('winston');
+  winston      = require('winston');
 
 let boltInstance;
-const handle = (opts) => {
-    if (opts.rawArgs.length === 2) boltInstance.info();
-  },
-  handleCommand = (commands) => {
+const handleCommand = (commands) => {
     for (const task of commands)
       try {
-        const env = program.env;
-        boltInstance.runTask(task, env);
+        boltInstance = new BoltInstance(program.env);
+        boltInstance.runTask(task, program.env);
       } catch (err) {
         winston.error(err.toString());
       }
   },
-  setUpInterface = () => {
+  setupInterface = () => {
     program
       .version(pkg.version)
-      .option('-e --env <value>', 'defines task runtime env')
+      .option('-e --env <value>', 'defines task/s runtime env')
       .arguments('[command...]')
       .action(handleCommand);
-
   };
 
 try {
   setup();
-  setUpInterface();
-  boltInstance = new BoltInstance();
+  setupInterface();
   program.parse(process.argv);
-  handle(program);
+  /* Unless handleCommmand is invoked we create an instance and show info */
+  boltInstance = new BoltInstance();
+  if (program.rawArgs.length === 2) boltInstance.info();
 } catch (err) {
   winston.error(err.toString());
 }
