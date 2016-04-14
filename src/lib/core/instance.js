@@ -67,7 +67,7 @@ class BoltInstance {
                 if (!nextTask.done)
                   run(nextTask.value);
                 else
-                  winston.profile('tasks')
+                  if (task.sequence && task.sequence.length > 0) winston.profile('tasks');
               }
             }
           )
