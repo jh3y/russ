@@ -2,8 +2,7 @@ require('colors');
 const pkg = require('../package.json'),
   winston = require('winston');
 
-
-const PROPS       = {
+const PROPS = {
   LOGGER_CONFIG: {
     LEVELS: {
       info   : 1,
@@ -22,28 +21,45 @@ const PROPS       = {
   }
 };
 
+const Con = winston.transports.Console;
+
+const formatter = (o) => {
+  /**
+    * Define the stamp color and print.
+  */
+  let stampColor = 'yellow';
+  if (o.level === 'error' || o.level === 'success')
+    stampColor = PROPS.LOGGER_CONFIG.COLORS[o.level];
+  const stampMsg = pkg.name[stampColor];
+
+  const dur = o.meta.durationMs;
+  const msgColor = PROPS.LOGGER_CONFIG.COLORS[o.level];
+
+  /**
+    * Define message content. If a duration is available, we are profiling,
+    * so prefix our message with "Finished".
+  */
+  const msg = (dur) ? `Finished ${o.message}`[msgColor] : o.message[msgColor];
+
+  let ms;
+  let durColor = 'green';
+  if (dur) {
+    ms = dur / 1000;
+    if (ms > 2) durColor = 'yellow';
+    if (ms > 5) durColor = 'red';
+  }
+  const durMsg = (dur) ? `${'in'.blue} ${(ms.toString() + 's')[durColor]}` : '';
+  const output = `[${stampMsg}] ${msg} ${durMsg}`;
+
+  return output;
+};
 
 const setUpLogger = () => {
-  winston.remove(winston.transports.Console);
-  winston.add(winston.transports.Console, {
-    level: 'silly',
+  winston.remove(Con);
+  winston.add(Con, {
+    level    : 'silly',
     colorize : true,
-    formatter: function(opts) {
-      const stampColor = (opts.level === 'error' || opts.level === 'success') ? PROPS.LOGGER_CONFIG.COLORS[opts.level]: 'yellow';
-      const dur = opts.meta.durationMs;
-      const stamp = pkg.name[stampColor];
-      const color = PROPS.LOGGER_CONFIG.COLORS[opts.level];
-      const msg = (dur) ? `Finished ${opts.message}`[color]: opts.message[color];
-      let durColor;
-      if (dur) {
-        durColor = 'green';
-        if ((dur / 1000) > 2) durColor = 'yellow';
-        if ((dur / 1000) > 5) durColor = 'red';
-      }
-      const durMsg = (dur) ? `${'in'.blue} ${(dur / 1000).toString()[durColor] + 's'.blue}` : '';
-      const output = `[${stamp}] ${msg} ${durMsg}`;
-      return output;
-    }
+    formatter: formatter
   });
   winston.setLevels(PROPS.LOGGER_CONFIG.LEVELS);
 };
