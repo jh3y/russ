@@ -17,8 +17,12 @@ module.exports = [
       'winston'
     ],
     func: function(w, instance) {
-      w.success('LINTED');
-      w.info(`Environment: ${instance.env}`);
+      // instance.run('lint:styles').then(() => {
+      //   w.info('FINITOS HAT');
+      //   w.success('LINTED');
+      //   w.info(`Environment: ${instance.env}`);
+      //   instance.resolve();
+      // });
       setTimeout(() => {
         // @TODO Find out how to throw an ERROR here and have bolt catch it.
         // throw Error('REALLY??');
