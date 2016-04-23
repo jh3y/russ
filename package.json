@@ -8,10 +8,6 @@
       "type": "MIT"
     }
   ],
-  "config": {
-    "SCRIPTS_DEST": "./",
-    "SCRIPTS_SRC": "src"
-  },
   "preferGlobal": true,
   "bin": {
     "bolt": "./bin/bolt"
