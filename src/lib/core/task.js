@@ -30,7 +30,7 @@ class BoltTask {
     * For example; a compilation task might reference a "deploy" flag to know
     * that optimisation is required when compiling.
   */
-  run(env) {
+  run() {
     /**
       * Returns a Promise so that Bolt knows to start on the next task.
       * Be mindful that a watching task will never resolve so if we wish to run
@@ -54,7 +54,7 @@ class BoltTask {
       */
       if (this.func && typeof this.func === 'function')
         this.func(...this.deps, {
-          env: env,
+          env: this.parent.env,
           config: this.parent.config,
           resolve: resolve,
           reject: reject,

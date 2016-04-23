@@ -8,7 +8,7 @@ const winston  = require('winston'),
 // This is tricky when things have a pre and post I get that.
 // @TODO Pass env down the line
 class BoltInstance {
-  constructor() {
+  constructor(env) {
     /**
       * When creating an instance, we want to register tasks
       * gathered from "bolt.tasks" directory.
@@ -18,10 +18,9 @@ class BoltInstance {
     try {
       this.config = require(path);
     } catch (err) {
-      winston.error('no way');
       throw Error('missing .boltrc file');
     }
-
+    this.env = env;
     this.tasks = {};
     const tasks = fs.readdirSync('bolt.tasks');
     try {
@@ -30,7 +29,7 @@ class BoltInstance {
       winston.error(err.toString());
     }
   }
-  runTask(name, env) {
+  runTask(name) {
     // Return promise here???
     return new Promise((resolve, reject) => {
       let sequenceName;
@@ -65,7 +64,7 @@ class BoltInstance {
       const run = (name) => {
         try {
           const task = new BoltTask(this, this.tasks[name]);
-          task.run(env)
+          task.run(this.env)
             .then(
               () => {
                 winston.profile(name);

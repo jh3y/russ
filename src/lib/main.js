@@ -15,7 +15,7 @@ const handleCommand = (commands) => {
     for (const task of commands)
       try {
         boltInstance = new BoltInstance(program.env);
-        boltInstance.runTask(task, program.env);
+        boltInstance.runTask(task);
       } catch (err) {
         winston.error(err.toString());
       }

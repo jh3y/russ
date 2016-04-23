@@ -6,8 +6,17 @@ module.exports = [
       'winston'
     ],
     func: function(w, instance) {
+
+      // @TODO: This breaks the profiler. So need to work out how to
+      // profile only when necessary. Maybe with a UUID?
       w.info('hello');
-      instance.resolve();
+      if (instance.env === 'dist') {
+        w.info(`env: ${instance.env}`);
+        instance.run('lint:styles').then(() => {
+          instance.resolve();
+        });
+      } else
+        instance.resolve();
     }
   },
   {
@@ -17,15 +26,7 @@ module.exports = [
       'winston'
     ],
     func: function(w, instance) {
-      // instance.run('lint:styles').then(() => {
-      //   w.info('FINITOS HAT');
-      //   w.success('LINTED');
-      //   w.info(`Environment: ${instance.env}`);
-      //   instance.resolve();
-      // });
       setTimeout(() => {
-        // @TODO Find out how to throw an ERROR here and have bolt catch it.
-        // throw Error('REALLY??');
         instance.reject('hhhhmmm');
       }, 1000);
     }
