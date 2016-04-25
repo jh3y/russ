@@ -16,7 +16,7 @@ module.exports = [
           instance.resolve();
         });
       } else
-        instance.resolve();
+        setTimeout(instance.resolve, 500);
     }
   },
   {

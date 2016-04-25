@@ -75,8 +75,9 @@ class BoltInstance {
                   else {
                     if (sequenceName)
                       winston.profile(sequenceName);
-                    else
-                      winston.profile('tasks');
+                    // @TODO PROFILING WHEN MORE THAN ONE TASK PRE?POST?
+                    // else
+                    //   winston.profile('tasks');
                     // if (task.sequence && task.sequence.length > 0)
                     resolve();
                   }
@@ -105,7 +106,7 @@ class BoltInstance {
           winston.info(`Running ${sequenceName}`);
           winston.profile(task.name);
         }
-        if (task.pre || task.post) winston.profile('tasks');
+        // if (task.pre || task.post) winston.profile('tasks');
         run((tasks.next) ? tasks.next().value : tasks[0]);
       }
     });
