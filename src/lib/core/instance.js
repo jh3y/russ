@@ -22,32 +22,34 @@ class BoltInstance {
     }
   }
 
-  run(name) {
-    return new Promise((resolve, reject) => {
+  run(tasks) {
+    const exec = (name, resolve, reject) => {
       try {
         const task = new BoltTask(this, this.tasks[name]);
         task.run(this.env)
-        .then(
-          () => {
-            winston.profile(name);
-            if (this.pool.next) {
-              const nextTask = this.pool.next();
-              if (!nextTask.done) {
-                this.run(nextTask.value);
-              } else {
-                resolve();
+          .then(
+            () => {
+              winston.profile(name);
+              if (tasks.next) {
+                const nextTask = tasks.next();
+                if (!nextTask.done)
+                  exec(nextTask.value, resolve, reject);
+                else
+                  resolve();
               }
             }
-          }
-        )
-        .catch((err) => {
-          winston.error(`Error: ${err}`);
-          reject(err);
-        });
+          )
+          .catch((err) => {
+            winston.error(`Error: ${err}`);
+            reject(err);
+          });
       } catch (err) {
         winston.silly(`Whoah whoah ${err}`);
         reject(err);
       }
+    };
+    return new Promise((resolve, reject) => {
+      exec(tasks.next().value, resolve, reject);
     });
   }
 
@@ -91,7 +93,7 @@ class BoltInstance {
         for (const t of task.concurrent) this.runTask(t);
       } else {
         winston.profile('SOMETHING');
-        this.run((this.pool.next) ? this.pool.next().value : this.pool[0])
+        this.run(this.pool)
           .then(() => {
             // TODO Only profiles if we have one task... else won't
             //  resolve... sequence or pool.length > 1 not working.
