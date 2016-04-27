@@ -2,17 +2,8 @@ const winston  = require('winston'),
   fs           = require('fs'),
   BoltTask     = require('./task');
 
-
-// @TODO How can I run a task within a task dependant on a flag???
-// @TODO Dont profile the tasks if we are running things concurrently.
-// This is tricky when things have a pre and post I get that.
-// @TODO Pass env down the line
 class BoltInstance {
   constructor(env) {
-    /**
-      * When creating an instance, we want to register tasks
-      * gathered from "bolt.tasks" directory.
-    */
     const runtime = '.boltrc';
     const path = `${process.cwd()}/${runtime}`;
     try {
@@ -22,6 +13,7 @@ class BoltInstance {
     }
     this.env = env;
     this.tasks = {};
+    this.pool = [];
     const tasks = fs.readdirSync('bolt.tasks');
     try {
       this.register(tasks);
@@ -29,88 +21,88 @@ class BoltInstance {
       winston.error(err.toString());
     }
   }
-  runTask(name) {
-    // Return promise here???
+
+  run(name) {
     return new Promise((resolve, reject) => {
-      let sequenceName;
-      const clean = (a) => {
-        return a && (tasksToRun.indexOf(a) === -1);
-      };
-      const task = this.tasks[name];
-      if (!task) throw Error('No such task...');
-      const tasksToRun = [];
-      // Need to do some recursion here on the first in the list...
-      const getList = (name, parent) => {
-        if (name) {
-          if (!parent)
-            tasksToRun.push(name);
-          else {
-            const parentTask = this.tasks[parent];
-            const pIdx = tasksToRun.indexOf(parent);
-            const idx = (name === parentTask.post) ? (pIdx + 1) : pIdx;
-            tasksToRun.splice(idx, 0, name);
-          }
-          // Calculate pre/post
-          const task = this.tasks[name];
-          const tasks = [task.pre, task.post].filter(clean);
-          for (const t of tasks) getList(t, name);
-        }
-      };
-      if (task.sequence && task.sequence.length > 0)
-        for (const t of task.sequence) getList(t);
-      else
-        getList(name);
-
-      const run = (name) => {
-        try {
-          const task = new BoltTask(this, this.tasks[name]);
-          task.run(this.env)
-            .then(
-              () => {
-                winston.profile(name);
-                if (tasks.next) {
-                  const nextTask = tasks.next();
-                  if (!nextTask.done)
-                    run(nextTask.value);
-                  else {
-                    if (sequenceName)
-                      winston.profile(sequenceName);
-                    // @TODO PROFILING WHEN MORE THAN ONE TASK PRE?POST?
-                    // else
-                    //   winston.profile('tasks');
-                    // if (task.sequence && task.sequence.length > 0)
-                    resolve();
-                  }
-                }
+      try {
+        const task = new BoltTask(this, this.tasks[name]);
+        task.run(this.env)
+        .then(
+          () => {
+            winston.profile(name);
+            if (this.pool.next) {
+              const nextTask = this.pool.next();
+              if (!nextTask.done) {
+                this.run(nextTask.value);
+              } else {
+                resolve();
               }
-          )
-          .catch((err) => {
-            winston.error(`Error: ${err}`);
-            reject(err);
-          });
-        } catch (err) {
-          winston.silly(`Whoah whoah ${err}`);
+            }
+          }
+        )
+        .catch((err) => {
+          winston.error(`Error: ${err}`);
           reject(err);
-        }
-      };
-      const tasks = tasksToRun[Symbol.iterator]();
-
-      if (task.concurrent && task.concurrent.length > 0)
-        for (const t of task.concurrent) run(t);
-      else {
-        /**
-        * Start a profile against the complete set of tasks being run.
-        */
-        if (task.sequence) {
-          sequenceName = task.name;
-          winston.info(`Running ${sequenceName}`);
-          winston.profile(task.name);
-        }
-        // if (task.pre || task.post) winston.profile('tasks');
-        run((tasks.next) ? tasks.next().value : tasks[0]);
+        });
+      } catch (err) {
+        winston.silly(`Whoah whoah ${err}`);
+        reject(err);
       }
     });
   }
+
+  populatePool(name, parent) {
+    const clean = (a) => {
+      return a && (this.pool.indexOf(a) === -1);
+    };
+    if (name) {
+      if (!parent)
+        this.pool.push(name);
+      else {
+        const parentTask = this.tasks[parent];
+        const pIdx = this.pool.indexOf(parent);
+        const idx = (name === parentTask.post) ? (pIdx + 1) : pIdx;
+        this.pool.splice(idx, 0, name);
+      }
+      // Calculate pre/post
+      const task = this.tasks[name];
+      const tasks = [task.pre, task.post].filter(clean);
+      for (const t of tasks) this.populatePool(t, name);
+    }
+  }
+
+  runTask(name) {
+    const task = this.tasks[name];
+    if (!task) throw Error('No such task...');
+
+    return new Promise((resolve, reject) => {
+      if (task.sequence && task.sequence.length > 0)
+        for (const t of task.sequence) this.populatePool(t);
+      else
+        this.populatePool(name);
+
+      // console.log(this.pool);
+      this.pool = this.pool[Symbol.iterator]();
+
+      if (task.sequence) {
+        winston.info(`Running ${task.name}`);
+      }
+      if (task.concurrent && task.concurrent.length > 0) {
+        for (const t of task.concurrent) this.runTask(t);
+      } else {
+        winston.profile('SOMETHING');
+        this.run((this.pool.next) ? this.pool.next().value : this.pool[0])
+          .then(() => {
+            // TODO Only profiles if we have one task... else won't
+            //  resolve... sequence or pool.length > 1 not working.
+            winston.profile('SOMETHING');
+            winston.info('FII');
+            resolve();
+          });
+      }
+    });
+  }
+
   info() {
     let taskList = '\n';
     if (Object.keys(this.tasks).length > 0)
