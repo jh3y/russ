@@ -85,28 +85,34 @@ class BoltInstance {
   }
 
   runTask(name) {
+    console.log(name, this);
     const task = this.tasks[name];
     if (!task) throw Error('No such task...');
-
-    const taskPool = this.getPool(name);
-
-    return new Promise((resolve, reject) => {
-
-      if (task.sequence)
-        winston.info(`Running ${task.name}`);
-      // TODO Sort concurrent tasks.
-      // if (task.concurrent && task.concurrent.length > 0) {
-      //   for (const t of task.concurrent) this.runTask(t);
-      // } else {
-      winston.profile('SOMETHING');
-      this.run(taskPool)
-        .then(() => {
+    if (!task.concurrent) {
+      const taskPool = this.getPool(name);
+      console.log(taskPool);
+      return new Promise((resolve, reject) => {
+        if (task.sequence)
+          winston.info(`Running ${task.name}`);
+        if (task.sequence || taskPool.length > 1)
           winston.profile('SOMETHING');
-          winston.info('FII');
-          resolve();
+        this.run(taskPool)
+          .then(() => {
+            winston.profile('SOMETHING');
+            winston.info('FII');
+            resolve();
+          });
+        // }
+      });
+    } else {
+      winston.profile(name);
+      const concurrentTasks = task.concurrent.map(this.runTask.bind(this));
+      Promise.all(concurrentTasks)
+        .then(() => {
+          winston.profile(name);
         });
-      // }
-    });
+    }
+
   }
 
   info() {
