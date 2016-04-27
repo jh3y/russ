@@ -13,7 +13,6 @@ class BoltInstance {
     }
     this.env = env;
     this.tasks = {};
-    this.pool = [];
     const tasks = fs.readdirSync('bolt.tasks');
     try {
       this.register(tasks);
@@ -22,7 +21,8 @@ class BoltInstance {
     }
   }
 
-  run(tasks) {
+  run(taskPool) {
+    const tasks = taskPool[Symbol.iterator]();
     const exec = (name, resolve, reject) => {
       try {
         const task = new BoltTask(this, this.tasks[name]);
@@ -32,10 +32,11 @@ class BoltInstance {
               winston.profile(name);
               if (tasks.next) {
                 const nextTask = tasks.next();
-                if (!nextTask.done)
+                if (!nextTask.done) {
                   exec(nextTask.value, resolve, reject);
-                else
+                } else {
                   resolve();
+                }
               }
             }
           )
@@ -53,55 +54,58 @@ class BoltInstance {
     });
   }
 
-  populatePool(name, parent) {
+  getPool(name) {
+    const pool = [];
     const clean = (a) => {
-      return a && (this.pool.indexOf(a) === -1);
+      return a && (pool.indexOf(a) === -1);
     };
-    if (name) {
-      if (!parent)
-        this.pool.push(name);
-      else {
-        const parentTask = this.tasks[parent];
-        const pIdx = this.pool.indexOf(parent);
-        const idx = (name === parentTask.post) ? (pIdx + 1) : pIdx;
-        this.pool.splice(idx, 0, name);
-      }
-      // Calculate pre/post
+    const pushToPool = (name, parent) => {
       const task = this.tasks[name];
-      const tasks = [task.pre, task.post].filter(clean);
-      for (const t of tasks) this.populatePool(t, name);
-    }
+      let tasks;
+      if (task.sequence)
+        tasks = task.sequence.filter(clean);
+      else if (task.concurrent)
+        tasks = task.concurrent.filter(clean);
+      else
+        tasks = [task.pre, task.post].filter(clean);
+
+      if (parent) {
+        const parentTask = this.tasks[parent];
+        const pIdx = pool.indexOf(parent);
+        const idx = (name === parentTask.post) ? (pIdx + 1) : pIdx;
+        pool.splice(idx, 0, name);
+      } else if (!task.sequence) pool.push(name);
+
+      const newParent = (task.sequence) ? undefined : name;
+      if (tasks.length > 0)
+        for (const t of tasks) pushToPool(t, newParent);
+    };
+    pushToPool(name);
+    return pool;
   }
 
   runTask(name) {
     const task = this.tasks[name];
     if (!task) throw Error('No such task...');
 
+    const taskPool = this.getPool(name);
+
     return new Promise((resolve, reject) => {
-      if (task.sequence && task.sequence.length > 0)
-        for (const t of task.sequence) this.populatePool(t);
-      else
-        this.populatePool(name);
 
-      // console.log(this.pool);
-      this.pool = this.pool[Symbol.iterator]();
-
-      if (task.sequence) {
+      if (task.sequence)
         winston.info(`Running ${task.name}`);
-      }
-      if (task.concurrent && task.concurrent.length > 0) {
-        for (const t of task.concurrent) this.runTask(t);
-      } else {
-        winston.profile('SOMETHING');
-        this.run(this.pool)
-          .then(() => {
-            // TODO Only profiles if we have one task... else won't
-            //  resolve... sequence or pool.length > 1 not working.
-            winston.profile('SOMETHING');
-            winston.info('FII');
-            resolve();
-          });
-      }
+      // TODO Sort concurrent tasks.
+      // if (task.concurrent && task.concurrent.length > 0) {
+      //   for (const t of task.concurrent) this.runTask(t);
+      // } else {
+      winston.profile('SOMETHING');
+      this.run(taskPool)
+        .then(() => {
+          winston.profile('SOMETHING');
+          winston.info('FII');
+          resolve();
+        });
+      // }
     });
   }
 
