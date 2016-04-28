@@ -34,6 +34,3 @@ dev:## Develop bolt
 
 run-tests: ## Run bolt tests
 	$(MOCHA) $(TESTOPTS)
-
-update: ## Update node packages and dependencies
-	node wipe-dependencies.js && rm -rf node_modules && npm update --save-dev && npm update --save
