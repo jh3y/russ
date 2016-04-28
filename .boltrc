@@ -22,7 +22,7 @@ var pkg  = require('./package.json'),
           add: true
         }
       },
-      jade       : {
+      pug : {
         data : {
           name       : pkg.name,
           description: pkg.description
@@ -39,7 +39,8 @@ var pkg  = require('./package.json'),
       sources: {
         styles   : src + 'stylus/style.styl',
         scripts  : src + 'coffee/**/{greet,*}.coffee',
-        markup   : src + 'jade/*.jade'
+        docs     : src + 'pug/*.pug',
+        markup   : src + 'pug/**/*.pug'
       },
       destinations: {
         styles : env + 'css/',

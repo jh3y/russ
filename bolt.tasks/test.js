@@ -1,5 +1,8 @@
 module.exports = [
   {
+    name: 'T'
+  },
+  {
     name: 'A',
     doc: 'task a',
     post: 'B',
@@ -69,6 +72,16 @@ module.exports = [
     concurrent: [
       'watch:scripts',
       'watch:styles'
+    ]
+  },
+  {
+    name: 'big',
+    doc: 'runs some things',
+    sequence: [
+      'Z',
+      'compile',
+      'A',
+      'server'
     ]
   }
 ];

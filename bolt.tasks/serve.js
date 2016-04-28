@@ -7,6 +7,7 @@ module.exports = {
     'vinyl-buffer',
     'vinyl-file'
   ],
+  pre: 'compile',
   func: (bs, vss, vb, vf, bolt) => {
     const server = bs.create();
     const pluginOpts = bolt.config.pluginOpts;

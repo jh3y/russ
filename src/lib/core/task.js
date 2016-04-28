@@ -24,17 +24,14 @@ class BoltTask {
     }
   }
   /**
-    * runs task with given environment
-    *
-    * @param env {String} - defines an environment flag for a task to reference.
-    * For example; a compilation task might reference a "deploy" flag to know
-    * that optimisation is required when compiling.
+    * runs task
+    @return {Promise} - Promise that informs BoltInstance of task outcome.
   */
   run() {
     /**
       * Returns a Promise so that Bolt knows to start on the next task.
       * Be mindful that a watching task will never resolve so if we wish to run
-      * more than one watch, we must use "concurrent".
+      * more than one watch, we must use the "concurrent" option.
     */
     return new Promise((resolve, reject) => {
       /* give user feedback so they know which task is running */
@@ -45,12 +42,12 @@ class BoltTask {
       */
       winston.profile(this.name);
       /**
-        * if task has a function and it is a function run that function passing
-        * the task dependencies(an Array of required modules) and a reference
-        * Object that contains the resolve/reject for the Promise in addition
-        * to any configuration defined within .boltrc, environment and the
-        * instance run. Instance run is important for when we have a watcher
-        * that wishes to run another task.
+        * if task has a function, and it is a function, run that function
+        * passing the task dependencies(an Array of required modules) and a
+        * reference Object that contains the resolve/reject for the Promise in
+        * addition to any configuration defined within .boltrc, environment and
+        * the BoltInstance run. "run" is important for when we have a watcher
+        * that wishes to run another task or wish to run a task within a task.
       */
       if (this.func && typeof this.func === 'function')
         this.func(...this.deps, {

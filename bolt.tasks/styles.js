@@ -2,7 +2,7 @@ module.exports = [
   {
     name: 'compile:styles',
     doc : 'compiles Stylus',
-    pre : 'lint:styles',
+    // pre : 'lint:styles',
     deps: [
       'fs',
       'mkdirp',
