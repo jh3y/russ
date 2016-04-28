@@ -19,8 +19,16 @@ class BoltTask {
     */
     if (opts.deps.length > 0) {
       this.deps = [];
-      for (const dep of opts.deps)
-        this.deps.push(require(dep));
+      for (const dep of opts.deps) {
+        let module;
+        try {
+          module = require(dep);
+        } catch (err) {
+          const path = `${process.cwd()}/node_modules/${dep}`;
+          module = require(path);
+        }
+        this.deps.push(module);
+      }
     }
   }
   /**
