@@ -6,18 +6,18 @@ class BoltInstance {
   constructor(env) {
     const runtime = '.boltrc';
     const path = `${process.cwd()}/${runtime}`;
+    this.env = env;
+    this.tasks = {};
+    try {
+      const tasks = fs.readdirSync('bolt.tasks');
+      this.register(tasks);
+    } catch (err) {
+      throw Error('No bolt.tasks directory...');
+    }
     try {
       this.config = require(path);
     } catch (err) {
       throw Error('missing .boltrc file');
-    }
-    this.env = env;
-    this.tasks = {};
-    const tasks = fs.readdirSync('bolt.tasks');
-    try {
-      this.register(tasks);
-    } catch (err) {
-      winston.error(err.toString());
     }
   }
 
