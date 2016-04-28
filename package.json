@@ -1,54 +1,32 @@
 {
   "name": "bolt",
+  "description": "lightweight vanilla task runner",
   "version": "0.0.0",
-  "description": "setting up a task runner with nothing but node",
-  "devDependencies": {
-    "async": "^1.5.0",
-    "autoprefixer": "^6.0.3",
-    "browser-sync": "^2.9.12",
-    "coffee-script": "^1.10.0",
+  "main": "index.js",
+  "licenses": [
+    {
+      "type": "MIT"
+    }
+  ],
+  "preferGlobal": true,
+  "bin": {
+    "bolt": "./bin/bolt"
+  },
+  "engines": {
+    "node": ">= 0.8.0"
+  },
+  "dependencies": {
+    "colors": "^1.1.2",
     "commander": "^2.9.0",
-    "cssnano": "^3.3.2",
-    "fb-watchman": "^1.9.0",
-    "glob": "^5.0.15",
-    "gulp-tap": "^0.1.3",
-    "jade": "^1.11.0",
-    "node-sass": "^3.4.2",
-    "postcss": "^5.0.10",
-    "shelljs": "^0.6.0",
-    "stylelint": "^2.0.0",
-    "stylus": "^0.52.4",
-    "uglify-js": "^2.5.0",
-    "vinyl": "^1.1.1",
-    "vinyl-buffer": "^1.0.0",
-    "vinyl-file": "^2.0.0",
-    "vinyl-source-stream": "^1.1.0",
-    "watch": "^0.17.1",
-    "watchman": "^0.1.8",
     "winston": "^2.2.0"
   },
-  "config": {
-    "commence_setup_msg": "commencing setup",
-    "complete_setup_msg": "setup complete",
-    "scripts_dir": "src/coffee",
-    "scripts_task": "npm run build:scripts",
-    "scripts_dest": "public/js",
-    "scripts_concat": "src/coffee/*/*.coffee src/coffee/*.coffee",
-    "styles_dir": "src/stylus",
-    "styles_task": "npm run build:styles",
-    "styles_dest": "public/css"
-  },
-  "scripts": {
-    "presetup": "say $npm_package_config_commence_setup_msg",
-    "setup": "npm install",
-    "postsetup": "say $npm_package_config_complete_setup_msg",
-    "tester": "node tasks/scripts.js",
-    "prestyles:compile": "mkdir -pv public/css",
-    "build:styles": "stylus $npm_package_config_styles_dir --out $npm_package_config_styles_dest",
-    "watch:styles": "watch \"$npm_package_config_styles_task\" $npm_package_config_styles_dir",
-    "prebuild:scripts": "mkdir -pv public/js",
-    "build:scripts": "cat $npm_package_config_scripts_concat | coffee -c --stdio > $npm_package_config_scripts_dest/bolt.js",
-    "watch:scripts": "watch \"$npm_package_config_scripts_task\" $npm_package_config_scripts_dir",
-    "watch:dev": "npm run watch:scripts & npm run watch:styles"
+  "keywords": [],
+  "devDependencies": {
+    "babel-cli": "^6.7.5",
+    "babel-eslint": "^6.0.2",
+    "babel-polyfill": "^6.7.4",
+    "babel-preset-es2015": "^6.6.0",
+    "eslint": "^2.8.0",
+    "mocha": "^2.4.5"
   }
 }
