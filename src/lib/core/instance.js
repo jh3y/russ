@@ -35,7 +35,7 @@ class BoltInstance {
         }
       };
       const errCb = (err) => {
-        winston.error(`Error: ${err}`);
+        if (err) winston.error(`Error: ${err}`);
         reject(err);
       };
       try {
@@ -52,7 +52,6 @@ class BoltInstance {
             .catch(errCb);
         }
       } catch (err) {
-        winston.silly(`Whoah whoah ${err}`);
         reject(err);
       }
     };
@@ -105,7 +104,7 @@ class BoltInstance {
           resolve();
         })
         .catch((err) => {
-          winston.error(`Error: ${err}`);
+          if (err) winston.error(err.toString());
           reject();
         });
     });
@@ -123,14 +122,14 @@ class BoltInstance {
     if (files.length === 0) throw new Error('No tasks in ./bolt.tasks/');
     for (const file of files) {
       const taskOpts = require(`${process.cwd()}/bolt.tasks/${file}`);
-      if (Array.isArray(taskOpts)) {
+      if (Array.isArray(taskOpts))
         for (const opt of taskOpts) {
-          if (opt.name && opt.doc) this.tasks[opt.name] = opt;
+          if (opt.name && opt.doc)
+            this.tasks[opt.name] = opt;
         }
-      } else {
+      else
         if (taskOpts.name && taskOpts.doc)
           this.tasks[taskOpts.name] = taskOpts;
-      }
     }
   }
 }
