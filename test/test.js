@@ -1,14 +1,44 @@
 'use strict';
 
 var expect   = require('chai').expect,
+    fs       = require('fs'),
     instance = require('../lib/core/instance'),
     task     = require('../lib/core/task');
 
 suite('bolt', function () {
   suite('run', function () {
+    afterEach(function() {
+      fs.access('.boltrc', fs.F_OK, (err) => {
+        if (!err) fs.unlink('.boltrc');
+      });
+      fs.access('bolt.tasks', fs.F_OK, (err) => {
+        if (!err) fs.rmdirSync('bolt.tasks');
+      });
+    });
     test('is', function () {
       expect(instance).to.not.be.undefined;
       expect(task).to.not.be.undefined;
+    });
+    test('throws error', function() {
+      let error;
+      const attempt = () => {
+        error = undefined;
+        try {
+          var i = new instance();
+        } catch (err) {
+          error = err;
+        }
+      };
+      attempt();
+      expect(error).to.not.be.undefined;
+      expect(error.message).to.equals('Missing bolt files...');
+      fs.writeFile('.boltrc', {});
+      attempt();
+      expect(error).to.not.be.undefined;
+      expect(error.message).to.equals('Missing bolt files...');
+      fs.mkdirSync('bolt.tasks');
+      attempt();
+      expect(error).to.not.be.undefined;
     });
   });
 });
