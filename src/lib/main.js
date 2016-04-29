@@ -7,10 +7,11 @@
 const pkg      = require('../package.json'),
   program      = require('commander'),
   setup        = require('./setup'),
-  BoltInstance = require('./core/instance'),
-  winston      = require('winston');
+  winston      = require('winston'),
+  BoltInstance = require('./core/instance');
 
 let boltInstance;
+
 const handleCommand = (commands) => {
     for (const task of commands)
       try {

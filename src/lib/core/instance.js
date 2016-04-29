@@ -2,23 +2,26 @@ const winston  = require('winston'),
   fs           = require('fs'),
   BoltTask     = require('./task');
 
+/**
+  * @class BoltInstance
+  *
+  * creates a new BoltInstance with an optional environment variable
+  * @param env {string} - define runtime environment
+  * @returns {Object} - BoltInstance
+*/
 class BoltInstance {
   constructor(env) {
-    const runtime = '.boltrc';
-    const path = `${process.cwd()}/${runtime}`;
+    let tasks;
+    let config;
+    try {
+      config = require(`${process.cwd()}/.boltrc`);
+      tasks = fs.readdirSync('bolt.tasks');
+    } catch (err) {
+      throw Error('Missing bolt files...');
+    }
     this.env = env;
-    this.tasks = {};
-    try {
-      const tasks = fs.readdirSync('bolt.tasks');
-      this.register(tasks);
-    } catch (err) {
-      throw Error('No bolt.tasks directory...');
-    }
-    try {
-      this.config = require(path);
-    } catch (err) {
-      throw Error('missing .boltrc file');
-    }
+    this.config = config;
+    this.register(tasks);
   }
 
   run(taskPool) {
@@ -118,8 +121,14 @@ class BoltInstance {
         taskList += `     ${task.green}: ${this.tasks[task].doc.cyan}\n`;
     winston.info(`${header}${taskList}`);
   }
+
+  /**
+    * populates instance tasks
+    * @param files {Array} array of task objects to use when registering
+  */
   register(files) {
-    if (files.length === 0) throw new Error('No tasks in ./bolt.tasks/');
+    if (files.length === 0) throw new Error('No tasks defined in bolt.tasks');
+    this.tasks = {};
     for (const file of files) {
       const taskOpts = require(`${process.cwd()}/bolt.tasks/${file}`);
       if (Array.isArray(taskOpts))
