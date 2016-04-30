@@ -22,6 +22,7 @@ class BoltInstance {
     this.env = env;
     this.config = config;
     this.register(tasks);
+    return this;
   }
 
   run(taskPool) {
