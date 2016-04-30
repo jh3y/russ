@@ -128,6 +128,14 @@ class BoltInstance {
     * @param files {Array} array of task objects to use when registering
   */
   register(files) {
+    const registerTask = (opts) => {
+      const ERR_MSG = 'Task missing properties...';
+      const hasFunc = opts.func && typeof opts.func === 'function';
+      const isDel   = opts.concurrent || opts.sequence;
+      if (!opts.name || !opts.doc && (hasFunc || isDel))
+        throw new Error(ERR_MSG);
+      this.tasks[opts.name] = opts;
+    };
     if (files.length === 0) throw new Error('No tasks defined in bolt.tasks');
     this.tasks = {};
     for (const file of files) {
@@ -135,13 +143,9 @@ class BoltInstance {
       if (this.tasks[taskOpts.name])
         throw new Error(`Task ${taskOpts.name} already defined...`);
       if (Array.isArray(taskOpts))
-        for (const opt of taskOpts) {
-          if (opt.name && opt.doc)
-            this.tasks[opt.name] = opt;
-        }
+        taskOpts.map(registerTask);
       else
-        if (taskOpts.name && taskOpts.doc)
-          this.tasks[taskOpts.name] = taskOpts;
+        registerTask(taskOpts);
     }
   }
 }

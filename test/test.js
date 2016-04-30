@@ -16,8 +16,17 @@ const clearOutRequireCache = () => {
     if (entry.indexOf(PROPS.DIR) !== -1) delete require.cache[entry];
 };
 
+
+// /"function *\({1}[ a-z, ]*\){1}.*}"{1}/gi
+// ("function)? *\({1}[ a-z, ]*\){1} *(=>)? *.*}"{1}
 const genTaskFile = (name, opts) => {
-  const content = `module.exports = ${JSON.stringify(opts)}`;
+  const funcMatch = /"(function)? *\({1}[ a-z, ]*\){1} *(=>)? *.*}"{1}/gmi;
+  if (opts.func) opts.func = opts.func.toString();
+  let content = `module.exports = ${JSON.stringify(opts)}`;
+  const matches = content.match(funcMatch);
+  if (matches && matches.length)
+    for (const match of matches)
+      content = content.replace(match, match.substring(1, match.length - 1));
   fs.writeFileSync(`${PROPS.DIR}/${name}`, content);
 };
 
@@ -48,14 +57,6 @@ describe(PROPS.NAME, function() {
         fs.mkdirSync(PROPS.DIR);
         expect(() => new BoltInstance()).to.throw(Error);
       });
-      it('throws error when no task files created', function() {
-        const ERR_MSG = `No tasks defined in ${PROPS.DIR}`;
-        fs.writeFileSync(PROPS.CONFIG, '{}');
-        fs.mkdirSync(PROPS.DIR);
-        expect(() => new BoltInstance()).to.throw(Error, ERR_MSG);
-        fs.writeFileSync(`${PROPS.DIR}/task.js`, '{}');
-        expect(() => new BoltInstance()).to.not.throw(Error);
-      });
     });
 
     describe('registry', function() {
@@ -66,15 +67,16 @@ describe(PROPS.NAME, function() {
       });
       afterEach(cleanUp);
 
-      it('empty tasks dont register', () => {
+      it('empty tasks throw error', () => {
+        const ERR_MSG = 'Task missing properties...';
         genTaskFile('task.js', {});
-        const newInstance = new BoltInstance();
-        expect(Object.keys(newInstance.tasks).length).to.equals(0);
+        expect(() => new BoltInstance()).to.throw(Error, ERR_MSG);
       });
       it('registers tasks', () => {
         const opts = {
           name: 'A',
-          doc: 'A generic task'
+          doc : 'A generic task',
+          func: function(winston){}
         };
         genTaskFile('task.js', opts);
         let instance = new BoltInstance();
@@ -87,7 +89,10 @@ describe(PROPS.NAME, function() {
         };
         const optsB = {
           name: 'B',
-          doc : 'A generic task'
+          doc : 'A generic task',
+          func: () => {},
+          boot: 'HELLO',
+          abba: function (yep) { return true; }
         };
         genTaskFile('A.js', optsA);
         genTaskFile('B.js', optsB);
