@@ -6,27 +6,34 @@ var expect   = require('chai').expect,
     task     = require('../lib/core/task');
 
 suite('bolt', function () {
-  suite('run', function () {
+  suite('instance', function () {
     afterEach(function() {
       fs.access('.boltrc', fs.F_OK, (err) => {
         if (!err) fs.unlink('.boltrc');
       });
       fs.access('bolt.tasks', fs.F_OK, (err) => {
+        const files = fs.readdirSync('bolt.tasks');
+        if (files.length !== 0)
+          for (const file of files) fs.unlink(`bolt.tasks/${file}`);
         if (!err) fs.rmdirSync('bolt.tasks');
       });
     });
-    test('is', function () {
-      expect(instance).to.not.be.undefined;
-      expect(task).to.not.be.undefined;
-    });
-    test('throws error', function() {
-      let error;
-      expect(() => new instance()).to.throw(Error, 'Missing bolt files...');
-      fs.writeFile('.boltrc', {});
-      expect(() => new instance()).to.throw(Error, 'Missing bolt files...');
+    test('throws error when missing setup files', function() {
+      const MISSING_MSG = 'Missing bolt files...';
+      expect(() => new instance()).to.throw(Error, MISSING_MSG);
+      fs.writeFileSync('.boltrc', '{}');
+      expect(() => new instance()).to.throw(Error, MISSING_MSG);
       fs.mkdirSync('bolt.tasks');
       expect(() => new instance()).to.throw(Error);
     });
+    test('throws error when no task files created', () => {
+      const ERR_MSG = 'No tasks defined in bolt.tasks';
+      fs.writeFileSync('.boltrc', '{}');
+      fs.mkdirSync('bolt.tasks');
+      expect(() => new instance()).to.throw(Error, ERR_MSG);
+      fs.writeFileSync('bolt.tasks/task.js', '{}');
+      expect(() => new instance()).to.not.throw(Error);
+    })
   });
 });
 
