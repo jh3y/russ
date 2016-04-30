@@ -72,27 +72,35 @@ describe(PROPS.NAME, function() {
         genTaskFile('task.js', {});
         expect(() => new BoltInstance()).to.throw(Error, ERR_MSG);
       });
+      it('throws error where task missing props', () => {
+        const ERR_MSG = 'Task missing properties...';
+        const opts = {
+          name: 'A',
+          doc : 'A failing task'
+        };
+        genTaskFile('task.js', opts);
+        expect(() => new BoltInstance()).to.throw(Error, ERR_MSG);
+      });
       it('registers tasks', () => {
         const opts = {
           name: 'A',
           doc : 'A generic task',
-          func: function(winston){}
+          func: function(){ }
         };
         genTaskFile('task.js', opts);
-        let instance = new BoltInstance();
+        const instance = new BoltInstance();
         expect(instance.tasks.A).to.not.be.undefined;
       });
       it('registers multiple tasks', () => {
         const optsA = {
           name: 'A',
-          doc: 'A generic task'
+          doc : 'A generic task',
+          func: () => {}
         };
         const optsB = {
           name: 'B',
           doc : 'A generic task',
-          func: () => {},
-          boot: 'HELLO',
-          abba: function (yep) { return true; }
+          func: () => {}
         };
         genTaskFile('A.js', optsA);
         genTaskFile('B.js', optsB);
@@ -103,16 +111,23 @@ describe(PROPS.NAME, function() {
         const ERR_MSG = 'Task A already defined...';
         const optsA = {
           name: 'A',
-          doc: 'A generic task'
+          doc : 'A generic task',
+          func: () => {}
         };
         const optsB = {
           name: 'A',
-          doc : 'A generic task'
+          doc : 'A generic task',
+          func: () => {}
         };
         genTaskFile('A.js', optsA);
         genTaskFile('B.js', optsB);
         expect(() => new BoltInstance()).to.throw(Error, ERR_MSG);
       })
+    });
+    describe('info', () => {
+      it('shows self documentation of tasks', () => {
+        expect(true).to.equals.true;
+      });
     });
   });
 });
@@ -120,9 +135,9 @@ describe(PROPS.NAME, function() {
 /**
   * TODO
   * INSTANCE TESTING
-  * 1. Generating new BoltInstance throws error when no .boltrc or bolt.tasks or
-  * no tasks in bolt.tasks folder
-  * 2. Correctly registers tasks, NO duplicates, throw error.
+  TICK * 1. Generating new BoltInstance throws error when no .boltrc or bolt.tasks or
+  TICK * no tasks in bolt.tasks folder
+  TICK * 2. Correctly registers tasks, NO duplicates, throw error.
   * 3. Correctly generates task pool(concurrent and sequential tasks)
   * 4. Potentially test the info function to check output
   * 5. Task gen should fail where a task has no name, func, or description

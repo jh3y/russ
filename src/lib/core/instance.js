@@ -132,9 +132,10 @@ class BoltInstance {
       const ERR_MSG = 'Task missing properties...';
       const hasFunc = opts.func && typeof opts.func === 'function';
       const isDel   = opts.concurrent || opts.sequence;
-      if (!opts.name || !opts.doc && (hasFunc || isDel))
+      if (opts.name && opts.doc && (hasFunc || isDel))
+        this.tasks[opts.name] = opts;
+      else
         throw new Error(ERR_MSG);
-      this.tasks[opts.name] = opts;
     };
     if (files.length === 0) throw new Error('No tasks defined in bolt.tasks');
     this.tasks = {};
