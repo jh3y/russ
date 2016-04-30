@@ -94,6 +94,20 @@ describe(PROPS.NAME, function() {
         let myInstance = new BoltInstance();
         expect(Object.keys(myInstance.tasks).length).to.equals(2);
       });
+      it('does not allow duplicates', () => {
+        const ERR_MSG = 'Task A already defined...';
+        const optsA = {
+          name: 'A',
+          doc: 'A generic task'
+        };
+        const optsB = {
+          name: 'A',
+          doc : 'A generic task'
+        };
+        genTaskFile('A.js', optsA);
+        genTaskFile('B.js', optsB);
+        expect(() => new BoltInstance()).to.throw(Error, ERR_MSG);
+      })
     });
   });
 });
@@ -103,7 +117,7 @@ describe(PROPS.NAME, function() {
   * INSTANCE TESTING
   * 1. Generating new BoltInstance throws error when no .boltrc or bolt.tasks or
   * no tasks in bolt.tasks folder
-  * 2. Correctly registers tasks
+  * 2. Correctly registers tasks, NO duplicates, throw error.
   * 3. Correctly generates task pool(concurrent and sequential tasks)
   * 4. Potentially test the info function to check output
   * 5. Task gen should fail where a task has no name, func, or description

@@ -132,6 +132,8 @@ class BoltInstance {
     this.tasks = {};
     for (const file of files) {
       const taskOpts = require(`${process.cwd()}/bolt.tasks/${file}`);
+      if (this.tasks[taskOpts.name])
+        throw new Error(`Task ${taskOpts.name} already defined...`);
       if (Array.isArray(taskOpts))
         for (const opt of taskOpts) {
           if (opt.name && opt.doc)
