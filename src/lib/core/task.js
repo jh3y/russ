@@ -50,21 +50,20 @@ class BoltTask {
       */
       winston.profile(this.name);
       /**
-        * if task has a function, and it is a function, run that function
+        * run function
         * passing the task dependencies(an Array of required modules) and a
         * reference Object that contains the resolve/reject for the Promise in
         * addition to any configuration defined within .boltrc, environment and
         * the BoltInstance run. "run" is important for when we have a watcher
         * that wishes to run another task or wish to run a task within a task.
       */
-      if (this.func && typeof this.func === 'function')
-        this.func(...this.deps, {
-          env: this.parent.env,
-          config: this.parent.config,
-          resolve: resolve,
-          reject: reject,
-          run: this.parent.runTask.bind(this.parent)
-        });
+      this.func(...this.deps, {
+        env: this.parent.env,
+        config: this.parent.config,
+        resolve: resolve,
+        reject: reject,
+        run: this.parent.runTask.bind(this.parent)
+      });
     });
   }
 }
