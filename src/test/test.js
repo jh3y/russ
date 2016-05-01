@@ -172,6 +172,34 @@ describe(PROPS.NAME, function() {
           done();
         });
       });
+      it('runs tasks concurrently', (done) => {
+        const opts = {
+          name: 'A',
+          doc : 'A sequence task',
+          func: function(instance) {
+            instance[`${this.name}Started`] = new Date().getTime();
+            instance.__parent.env += this.name;
+            setTimeout(instance.resolve, 1000);
+          }
+        };
+        genTaskFile('A.js', opts);
+        opts.name = 'B';
+        genTaskFile('B.js', opts);
+        genTaskFile('CONCURRENT.js', {
+          name: 'CONCURRENT',
+          doc : 'Run A and B',
+          concurrent: [
+            'A',
+            'B'
+          ]
+        });
+        const newInstance =  new BoltInstance('');
+        newInstance.runTask('CONCURRENT').then(() => {
+          console.log(newInstance);
+          expect(newInstance.env).to.equal('AB');
+          done();
+        });
+      });
       it('runs tasks in correct order', (done) => {
         let opts = {
           name: 'A',
