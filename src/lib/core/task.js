@@ -17,8 +17,8 @@ class BoltTask {
       * If the task is dependant on modules and these are declared in the task
       * definition, require each and push into an Array to be used at run time
     */
-    if (opts.deps.length > 0) {
-      this.deps = [];
+    this.deps = [];
+    if (opts.deps && opts.deps.length) {
       for (const dep of opts.deps) {
         let module;
         try {
