@@ -150,7 +150,7 @@ describe(PROPS.NAME, function() {
   TICK * 2. Correctly registers tasks, NO duplicates, throw error.
   * 3. Correctly generates task pool(concurrent and sequential tasks)
   TICK not sure it's feasible * 4. Potentially test the info function to check output
-  * 5. Task gen should fail where a task has no name, func, or description
+  TICK * 5. Task gen should fail where a task has no name, func, or description
   * 6. pre/post hook is covered by getPool testing
   * 7. But can we test if I run 'B', 'A' and 'C' are also run(and in order???)
   * 8. Testing of the actual "run" task will be tricky
@@ -158,5 +158,5 @@ describe(PROPS.NAME, function() {
   * 1. Test that a task is correctly generated with the correct content?
   * 2. Task run function, check that BoltInstance has the correct properties
   * 3. Constructor fails if certain properties don't exist.
-  * 4. Check that run actually is invoked by BoltInstance?
+  TICK * 4. Check that run actually is invoked by BoltInstance?
 */
