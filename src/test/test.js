@@ -161,8 +161,36 @@ describe(PROPS.NAME, function() {
           expect(newInstance.env).to.equals(2);
           done();
         });
-
-
+      });
+      it('runs tasks in correct order', (done) => {
+        const opts = {
+          name: 'A',
+          doc : 'A dummy task',
+          func: (instance) => {
+            instance.__parent.env = 'A';
+            instance.resolve();
+          }
+        };
+        genTaskFile('A.js', opts);
+        opts.name = 'C';
+        opts.func = (instance) => {
+          instance.__parent.env += 'C';
+          instance.resolve();
+        };
+        genTaskFile('C.js', opts);
+        opts.name = 'B';
+        opts.pre  = 'A';
+        opts.post = 'C';
+        opts.func = (instance) => {
+          instance.__parent.env += 'B';
+          instance.resolve();
+        }
+        genTaskFile('B.js', opts);
+        const myInstance = new BoltInstance();
+        myInstance.runTask('B').then(() => {
+          expect(myInstance.env).to.equal('ABC');
+          done();
+        })
       });
     });
   });
