@@ -58,11 +58,12 @@ class BoltTask {
         * that wishes to run another task or wish to run a task within a task.
       */
       this.func(...this.deps, {
-        env: this.parent.env,
-        config: this.parent.config,
-        resolve: resolve,
-        reject: reject,
-        run: this.parent.runTask.bind(this.parent)
+        __parent: this.parent,
+        env     : this.parent.env,
+        config  : this.parent.config,
+        resolve : resolve,
+        reject  : reject,
+        run     : this.parent.runTask.bind(this.parent)
       });
     });
   }

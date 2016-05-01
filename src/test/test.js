@@ -16,7 +16,7 @@ const genTaskFile = (name, opts) => {
   const requirePath = `${process.cwd()}/${PROPS.DIR}/${name}`;
   if (require.cache[requirePath]) delete require.cache[requirePath];
   const funcMatch = /"(function)? *[ a-z ]*\({1}[ a-z, ]*\){1} *(=>)? *.*}"{1}/gmi;
-  if (opts.func) opts.func = opts.func.toString();
+  if (opts.func) opts.func = opts.func.toString().replace(new RegExp('\\n', 'g'), '');
   let content = `module.exports = ${JSON.stringify(opts)}`;
   const matches = content.match(funcMatch);
   if (matches && matches.length)
@@ -120,23 +120,49 @@ describe(PROPS.NAME, function() {
       })
     });
     describe('running', () => {
-      before(() => {
+      beforeEach(() => {
         fs.writeFileSync(PROPS.CONFIG, '{}');
         fs.mkdirSync(PROPS.DIR);
       });
-      after(cleanUp);
-      it('runs task', () => {
+      afterEach(cleanUp);
+      it('runs task', (done) => {
         const opts = {
           name: 'A',
           doc : 'A dummy task',
-          func: () => {}
+          func: (instance) => {
+            instance.__parent.env++;
+            instance.resolve();
+          }
         };
         genTaskFile('task.js', opts);
-        const newInstance = new BoltInstance();
-        newInstance.tasks.A.func = sinon.spy();
+        const newInstance = new BoltInstance(0);
         winston.info = sinon.stub();
-        newInstance.runTask('A');
-        expect(newInstance.tasks.A.func.called).to.equal(true);
+        winston.profile = sinon.stub();
+        newInstance.runTask('A').then(() => {
+          expect(newInstance.env).to.equals(1);
+          done();
+        });
+      });
+      it('runs two tasks', (done) => {
+        const opts = {
+          name: 'A',
+          doc : 'A dummy task',
+          func: (instance) => {
+            instance.__parent.env++;
+            instance.resolve();
+          }
+        };
+        genTaskFile('A.js', opts);
+        opts.name = 'B';
+        opts.pre  = 'A';
+        genTaskFile('B.js', opts);
+        const newInstance = new BoltInstance(0);
+        newInstance.runTask('B').then(() => {
+          expect(newInstance.env).to.equals(2);
+          done();
+        });
+
+
       });
     });
   });
