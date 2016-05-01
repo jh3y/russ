@@ -120,8 +120,13 @@ describe(PROPS.NAME, function() {
       })
     });
     describe('running', () => {
+      before(() => {
+        winston.info = sinon.stub();
+        winston.profile = sinon.stub();
+        delete require.cache[`${process.cwd()}/.boltrc`];
+      });
       beforeEach(() => {
-        fs.writeFileSync(PROPS.CONFIG, '{}');
+        fs.writeFileSync(PROPS.CONFIG, 'module.exports = {test: true}');
         fs.mkdirSync(PROPS.DIR);
       });
       afterEach(cleanUp);
@@ -129,69 +134,88 @@ describe(PROPS.NAME, function() {
         const opts = {
           name: 'A',
           doc : 'A dummy task',
-          func: (instance) => {
-            instance.__parent.env++;
+          func: function(instance) {
+            instance.__parent.env += this.name;
             instance.resolve();
           }
         };
         genTaskFile('task.js', opts);
-        const newInstance = new BoltInstance(0);
-        winston.info = sinon.stub();
-        winston.profile = sinon.stub();
+        const newInstance = new BoltInstance('');
         newInstance.runTask('A').then(() => {
-          expect(newInstance.env).to.equals(1);
+          expect(newInstance.env).to.equals('A');
           done();
         });
       });
-      it('runs two tasks', (done) => {
+      it('runs task defined in a sequence', (done) => {
         const opts = {
           name: 'A',
-          doc : 'A dummy task',
-          func: (instance) => {
-            instance.__parent.env++;
+          doc : 'A sequence task',
+          func: function(instance) {
+            instance.__parent.env += this.name;
             instance.resolve();
           }
         };
         genTaskFile('A.js', opts);
         opts.name = 'B';
-        opts.pre  = 'A';
         genTaskFile('B.js', opts);
-        const newInstance = new BoltInstance(0);
-        newInstance.runTask('B').then(() => {
-          expect(newInstance.env).to.equals(2);
+        genTaskFile('SEQUENCE.js', {
+          name: 'SEQUENCE',
+          doc : 'Run A followed by B',
+          sequence: [
+            'A',
+            'B'
+          ]
+        });
+        const newInstance =  new BoltInstance('');
+        newInstance.runTask('SEQUENCE').then(() => {
+          expect(newInstance.env).to.equal('AB');
           done();
         });
       });
       it('runs tasks in correct order', (done) => {
-        const opts = {
+        let opts = {
           name: 'A',
           doc : 'A dummy task',
-          func: (instance) => {
-            instance.__parent.env = 'A';
+          func: function(instance) {
+            instance.__parent.env += this.name;
             instance.resolve();
           }
         };
-        genTaskFile('A.js', opts);
+        genTaskFile('task.js', opts);
         opts.name = 'C';
-        opts.func = (instance) => {
-          instance.__parent.env += 'C';
-          instance.resolve();
-        };
-        genTaskFile('C.js', opts);
+        genTaskFile('taskC.js', opts);
         opts.name = 'B';
         opts.pre  = 'A';
         opts.post = 'C';
-        opts.func = (instance) => {
-          instance.__parent.env += 'B';
-          instance.resolve();
-        }
-        genTaskFile('B.js', opts);
-        const myInstance = new BoltInstance();
+        genTaskFile('taskB.js', opts);
+        const myInstance = new BoltInstance('');
         myInstance.runTask('B').then(() => {
           expect(myInstance.env).to.equal('ABC');
           done();
         })
       });
+      it('is passed correct values', (done) => {
+        const opts = {
+          name: 'A',
+          doc : 'A checker',
+          deps: [
+            'chai'
+          ],
+          func: function(chai, instance) {
+            chai.expect(instance.resolve).to.not.be.undefined;
+            chai.expect(instance.reject).to.not.be.undefined;
+            chai.expect(instance.env).to.equal('TEST');
+            chai.expect(instance.config).to.not.be.undefined;
+            chai.expect(instance.config.test).to.equals(true);
+            instance.resolve();
+          }
+        };
+        genTaskFile('task.js', opts);
+        const myInstance = new BoltInstance('TEST');
+        myInstance.runTask('A').then(() => {
+          done();
+        });
+      })
     });
   });
 });
@@ -206,8 +230,8 @@ describe(PROPS.NAME, function() {
   TICK not sure it's feasible * 4. Potentially test the info function to check output
   TICK * 5. Task gen should fail where a task has no name, func, or description
   * 6. pre/post hook is covered by getPool testing
-  * 7. But can we test if I run 'B', 'A' and 'C' are also run(and in order???)
-  * 8. Testing of the actual "run" task will be tricky
+  TICK * 7. But can we test if I run 'B', 'A' and 'C' are also run(and in order???)
+  TICK * 8. Testing of the actual "run" task will be tricky
   * TASK Testing
   * 1. Test that a task is correctly generated with the correct content?
   * 2. Task run function, check that BoltInstance has the correct properties
