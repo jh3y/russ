@@ -1,11 +1,14 @@
 'use strict';
-
-const expect   = require('chai').expect,
+const chai     = require('chai'),
+  expect       = require('chai').expect,
   sinon        = require('sinon'),
+  sinonChai    = require('sinon-chai'),
   fs           = require('fs'),
   winston      = require('winston'),
   BoltInstance = require('../lib/core/instance'),
   BoltTask     = require('../lib/core/task');
+
+chai.use(sinonChai);
 
 const PROPS = {
   NAME: 'bolt',
@@ -120,6 +123,25 @@ describe(PROPS.NAME, function() {
         expect(() => new BoltInstance()).to.throw(Error, ERR_MSG);
       })
     });
+    describe('self docs', () => {
+      before(() => {
+        fs.writeFileSync(PROPS.CONFIG, '{}');
+        fs.mkdirSync(PROPS.DIR);
+      });
+      after(cleanUp);
+      it('shows task docs', () => {
+        const opts = {
+          name: 'A',
+          doc : 'DUMMY',
+          func: () => {}
+        };
+        genTaskFile('task.js', opts);
+        const newInstance = new BoltInstance();
+        winston.info = sinon.spy();
+        newInstance.info();
+        expect(winston.info).to.have.been.calledWith('HELLO');
+      });
+    });
     describe('running', () => {
       before(() => {
         fs.writeFileSync(PROPS.CONFIG, '{}');
@@ -150,7 +172,7 @@ describe(PROPS.NAME, function() {
   TICK * no tasks in bolt.tasks folder
   TICK * 2. Correctly registers tasks, NO duplicates, throw error.
   * 3. Correctly generates task pool(concurrent and sequential tasks)
-  * 4. Potentially test the info function to check output
+  TICK not sure it's feasible * 4. Potentially test the info function to check output
   * 5. Task gen should fail where a task has no name, func, or description
   * 6. pre/post hook is covered by getPool testing
   * 7. But can we test if I run 'B', 'A' and 'C' are also run(and in order???)
