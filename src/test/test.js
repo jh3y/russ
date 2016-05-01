@@ -1,14 +1,10 @@
 'use strict';
-const chai     = require('chai'),
-  expect       = require('chai').expect,
+const expect   = require('chai').expect,
   sinon        = require('sinon'),
-  sinonChai    = require('sinon-chai'),
   fs           = require('fs'),
   winston      = require('winston'),
   BoltInstance = require('../lib/core/instance'),
   BoltTask     = require('../lib/core/task');
-
-chai.use(sinonChai);
 
 const PROPS = {
   NAME: 'bolt',
@@ -122,25 +118,6 @@ describe(PROPS.NAME, function() {
         genTaskFile('B.js', optsB);
         expect(() => new BoltInstance()).to.throw(Error, ERR_MSG);
       })
-    });
-    describe('self docs', () => {
-      before(() => {
-        fs.writeFileSync(PROPS.CONFIG, '{}');
-        fs.mkdirSync(PROPS.DIR);
-      });
-      after(cleanUp);
-      it('shows task docs', () => {
-        const opts = {
-          name: 'A',
-          doc : 'DUMMY',
-          func: () => {}
-        };
-        genTaskFile('task.js', opts);
-        const newInstance = new BoltInstance();
-        winston.info = sinon.spy();
-        newInstance.info();
-        expect(winston.info).to.have.been.calledWith('HELLO');
-      });
     });
     describe('running', () => {
       before(() => {
