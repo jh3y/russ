@@ -123,6 +123,7 @@ describe(PROPS.NAME, function() {
       before(() => {
         winston.info = sinon.stub();
         winston.profile = sinon.stub();
+        winston.error = sinon.stub();
         delete require.cache[`${process.cwd()}/.boltrc`];
       });
       beforeEach(() => {
@@ -145,6 +146,24 @@ describe(PROPS.NAME, function() {
           expect(newInstance.env).to.equals('A');
           done();
         });
+      });
+      it('honors rejection', (done) => {
+        const opts = {
+          name: 'A',
+          doc : 'A dummy task',
+          func: function(instance) {
+            instance.reject('DONT WANT TO PLAY');
+          }
+        };
+        genTaskFile('A.js', opts);
+        const newInstance = new BoltInstance('');
+        newInstance.runTask('A')
+          .then(() => {
+            // Will never run the success block...
+          }, (err) => {
+            expect(err).to.equals('DONT WANT TO PLAY');
+            done();
+          });
       });
       it('runs task defined in a sequence', (done) => {
         const opts = {
@@ -203,7 +222,7 @@ describe(PROPS.NAME, function() {
           done();
         });
       });
-      it('runs tasks in correct order', (done) => {
+      it('runs pre/post hook tasks', (done) => {
         let opts = {
           name: 'A',
           doc : 'A dummy task',
@@ -222,6 +241,26 @@ describe(PROPS.NAME, function() {
         const myInstance = new BoltInstance('');
         myInstance.runTask('B').then(() => {
           expect(myInstance.env).to.equal('ABC');
+          done();
+        })
+      });
+      it('does not run a task more than once', (done) => {
+        let opts = {
+          name: 'A',
+          doc : 'A dummy task',
+          post: 'B',
+          func: function(instance) {
+            instance.__parent.env += this.name;
+            instance.resolve();
+          }
+        };
+        genTaskFile('A.js', opts);
+        opts.name = 'B';
+        opts.post = 'A';
+        genTaskFile('B.js', opts);
+        const myInstance = new BoltInstance('');
+        myInstance.runTask('A').then(() => {
+          expect(myInstance.env).to.equal('AB');
           done();
         })
       });

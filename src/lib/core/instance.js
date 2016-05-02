@@ -109,7 +109,7 @@ class BoltInstance {
         })
         .catch((err) => {
           if (err) winston.error(err.toString());
-          reject();
+          reject(err);
         });
     });
   }
