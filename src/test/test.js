@@ -230,6 +230,26 @@ describe(PROPS.NAME, function() {
           done();
         });
       });
+      it('throws error if dep not installed', (done) => {
+        const opts = {
+          name: 'A',
+          deps: [
+            'fake-module'
+          ],
+          doc: 'Failing task',
+          func: function () {}
+        };
+        genTaskFile('A.js', opts);
+        const newInstance = new BoltInstance();
+        const ERR_MSG = 'Error: Module fake-module not found, installed?';
+        newInstance.runTask('A')
+          .then(() => {
+            // Will never run this...
+          }, (err) => {
+            expect(err).to.equals(ERR_MSG);
+            done();
+          });
+      });
       it('honors rejection', (done) => {
         const opts = {
           name: 'A',
@@ -377,10 +397,4 @@ describe(PROPS.NAME, function() {
   * TODO
   * 3. Correctly generates task pool(concurrent and sequential tasks)
   * 6. pre/post hook is covered by getPool testing sequenced pre/post?
-
-  * TASK Testing
-  * 1. Test that a task is correctly generated with the correct content?
-  * 2. Task run function, check that BoltInstance has the correct properties
-  * 3. Constructor fails if certain properties don't exist.
-  TICK * 4. Check that run actually is invoked by BoltInstance?
 */

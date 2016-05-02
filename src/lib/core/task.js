@@ -23,10 +23,12 @@ class BoltTask {
         let module;
         try {
           module = require(dep);
-        } catch (err) {
+        } catch (err) {}
+        try {
           const path = `${process.cwd()}/node_modules/${dep}`;
           module = require(path);
-        }
+        } catch (err) {}
+        if (!module) throw Error(`Module ${dep} not found, installed?`);
         this.deps.push(module);
       }
     }

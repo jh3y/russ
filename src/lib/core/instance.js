@@ -50,7 +50,12 @@ class BoltInstance {
             .then(cb)
             .catch(errCb);
         } else {
-          const task = new BoltTask(this, this.tasks[name]);
+          let task;
+          try {
+            task = new BoltTask(this, this.tasks[name]);
+          } catch (err) {
+            reject(err.toString());
+          }
           task.run(this.env)
             .then(cb)
             .catch(errCb);
@@ -69,7 +74,7 @@ class BoltInstance {
     const pushToPool = (name, parent) => {
       if (pool.indexOf(name) !== -1) return;
       const task = this.tasks[name];
-      if (!task) throw new Error(`Task ${name} is not defined...`);
+      if (!task) throw Error(`Task ${name} is not defined...`);
       const clean = (a) => {
         return a && (pool.indexOf(a) === -1);
       };
@@ -110,6 +115,7 @@ class BoltInstance {
           resolve();
         })
         .catch((err) => {
+          winston.error(err.toString());
           reject(err);
         });
     });
