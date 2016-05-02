@@ -66,6 +66,7 @@ class AbyTask {
         __parent: this.parent,
         env     : this.parent.env,
         config  : this.parent.config,
+        log     : winston,
         resolve : resolve,
         reject  : reject,
         run     : this.parent.runTask.bind(this.parent)
