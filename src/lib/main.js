@@ -1,5 +1,5 @@
 /**
-  * bolt - a lightweight task runner
+  * AbY - just another task runner
   *
   * @author jh3y 2016
   * @license MIT
@@ -8,15 +8,15 @@ const pkg      = require('../package.json'),
   program      = require('commander'),
   setup        = require('./setup'),
   winston      = require('winston'),
-  BoltInstance = require('./core/instance');
+  AbyInstance = require('./core/instance');
 
-let boltInstance;
+let abyInstance;
 
 const handleCommand = (commands) => {
     for (const task of commands)
       try {
-        boltInstance = new BoltInstance(program.env);
-        boltInstance.runTask(task);
+        abyInstance = new AbyInstance(program.env);
+        abyInstance.runTask(task);
       } catch (err) {
         winston.error(err.toString());
       }
@@ -34,8 +34,8 @@ try {
   setupInterface();
   program.parse(process.argv);
   /* Unless handleCommmand is invoked we create an instance and show info */
-  boltInstance = new BoltInstance();
-  if (program.rawArgs.length === 2) boltInstance.info();
+  abyInstance = new AbyInstance();
+  if (program.rawArgs.length === 2) abyInstance.info();
 } catch (err) {
   winston.error(err.toString());
 }

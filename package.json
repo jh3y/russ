@@ -1,6 +1,6 @@
 {
-  "name": "bolt",
-  "description": "lightweight vanilla task runner",
+  "name": "aby",
+  "description": "just another task runner",
   "version": "0.0.0",
   "main": "index.js",
   "licenses": [
@@ -10,7 +10,7 @@
   ],
   "preferGlobal": true,
   "bin": {
-    "bolt": "./bin/bolt"
+    "aby": "./bin/aby"
   },
   "engines": {
     "node": ">= 0.8.0"

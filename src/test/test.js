@@ -3,13 +3,13 @@ const expect   = require('chai').expect,
   sinon        = require('sinon'),
   fs           = require('fs'),
   winston      = require('winston'),
-  BoltInstance = require('../lib/core/instance'),
-  BoltTask     = require('../lib/core/task');
+  AbyInstance = require('../lib/core/instance'),
+  AbyTask     = require('../lib/core/task');
 
 const PROPS = {
-  NAME: 'bolt',
-  CONFIG: '.boltrc',
-  DIR: 'bolt.tasks'
+  NAME: 'aby',
+  CONFIG: '.abyrc',
+  DIR: 'aby.tasks'
 };
 
 const genTaskFile = (name, opts) => {
@@ -47,11 +47,11 @@ describe(PROPS.NAME, function() {
       afterEach(cleanUp);
       it('throws error when missing setup files', function() {
         const MISSING_MSG = `Missing ${PROPS.NAME} files...`;
-        expect(() => new BoltInstance()).to.throw(Error, MISSING_MSG);
+        expect(() => new AbyInstance()).to.throw(Error, MISSING_MSG);
         fs.writeFileSync(PROPS.CONFIG, '{}');
-        expect(() => new BoltInstance()).to.throw(Error, MISSING_MSG);
+        expect(() => new AbyInstance()).to.throw(Error, MISSING_MSG);
         fs.mkdirSync(PROPS.DIR);
-        expect(() => new BoltInstance()).to.throw(Error);
+        expect(() => new AbyInstance()).to.throw(Error);
       });
     });
 
@@ -63,18 +63,18 @@ describe(PROPS.NAME, function() {
       afterEach(cleanUp);
 
       it('empty tasks throw error', () => {
-        const ERR_MSG = 'Task missing properties...';
+        const ERR_MSG = 'Task undefined missing properties...';
         genTaskFile('task.js', {});
-        expect(() => new BoltInstance()).to.throw(Error, ERR_MSG);
+        expect(() => new AbyInstance()).to.throw(Error, ERR_MSG);
       });
       it('throws error where task missing props', () => {
-        const ERR_MSG = 'Task missing properties...';
+        const ERR_MSG = 'Task A missing properties...';
         const opts = {
           name: 'A',
           doc : 'A failing task'
         };
         genTaskFile('task.js', opts);
-        expect(() => new BoltInstance()).to.throw(Error, ERR_MSG);
+        expect(() => new AbyInstance()).to.throw(Error, ERR_MSG);
       });
       it('registers tasks', () => {
         const opts = {
@@ -83,7 +83,7 @@ describe(PROPS.NAME, function() {
           func: function(){}
         };
         genTaskFile('task.js', opts);
-        const instance = new BoltInstance();
+        const instance = new AbyInstance();
         expect(instance.tasks.A).to.not.be.undefined;
       });
       it('registers multiple tasks', () => {
@@ -99,7 +99,7 @@ describe(PROPS.NAME, function() {
         };
         genTaskFile('A.js', optsA);
         genTaskFile('B.js', optsB);
-        let myInstance = new BoltInstance();
+        let myInstance = new AbyInstance();
         expect(Object.keys(myInstance.tasks).length).to.equals(2);
       });
       it('does not allow duplicates', () => {
@@ -116,7 +116,7 @@ describe(PROPS.NAME, function() {
         };
         genTaskFile('A.js', optsA);
         genTaskFile('B.js', optsB);
-        expect(() => new BoltInstance()).to.throw(Error, ERR_MSG);
+        expect(() => new AbyInstance()).to.throw(Error, ERR_MSG);
       });
     });
     describe('task pooling', () => {
@@ -132,7 +132,7 @@ describe(PROPS.NAME, function() {
           func: () => {}
         };
         genTaskFile('A.js', opts);
-        const newInstance = new BoltInstance();
+        const newInstance = new AbyInstance();
         const pool = newInstance.getPool('A');
         expect(pool.length).to.equals(1);
         expect(pool.toString()).to.equals('A');
@@ -152,7 +152,7 @@ describe(PROPS.NAME, function() {
           func: () => {}
         };
         genTaskFile('B.js', optsB);
-        const newInstance = new BoltInstance();
+        const newInstance = new AbyInstance();
         const pool = newInstance.getPool('B');
         expect(pool.length).to.equals(2);
         expect(pool.toString()).to.equals('A,B');
@@ -180,7 +180,7 @@ describe(PROPS.NAME, function() {
         opts.name = 'E';
         opts.pre  = 'D';
         genTaskFile('E.js', opts);
-        const newInstance = new BoltInstance();
+        const newInstance = new AbyInstance();
         const expectedRes = 'A,B,C,D,E';
         let pool = newInstance.getPool('A');
         expect(pool.toString()).to.equal(expectedRes);
@@ -198,7 +198,7 @@ describe(PROPS.NAME, function() {
         };
         genTaskFile('A.js', opts);
         // Ensures we don't get a cached version that breaks our test.
-        const newInstance = new BoltInstance();
+        const newInstance = new AbyInstance();
         expect(() => newInstance.getPool('A')).to.throw(Error, 'Task B is not defined');
       })
     });
@@ -207,7 +207,7 @@ describe(PROPS.NAME, function() {
         winston.info = sinon.stub();
         winston.profile = sinon.stub();
         winston.error = sinon.stub();
-        delete require.cache[`${process.cwd()}/.boltrc`];
+        delete require.cache[`${process.cwd()}/${PROPS.CONFIG}`];
       });
       beforeEach(() => {
         fs.writeFileSync(PROPS.CONFIG, 'module.exports = {test: true}');
@@ -224,7 +224,7 @@ describe(PROPS.NAME, function() {
           }
         };
         genTaskFile('task.js', opts);
-        const newInstance = new BoltInstance('');
+        const newInstance = new AbyInstance('');
         newInstance.runTask('A').then(() => {
           expect(newInstance.env).to.equals('A');
           done();
@@ -240,7 +240,7 @@ describe(PROPS.NAME, function() {
           func: function () {}
         };
         genTaskFile('A.js', opts);
-        const newInstance = new BoltInstance();
+        const newInstance = new AbyInstance();
         const ERR_MSG = 'Error: Module fake-module not found, installed?';
         newInstance.runTask('A')
           .then(() => {
@@ -259,7 +259,7 @@ describe(PROPS.NAME, function() {
           }
         };
         genTaskFile('A.js', opts);
-        const newInstance = new BoltInstance('');
+        const newInstance = new AbyInstance('');
         newInstance.runTask('A')
           .then(() => {
             // Will never run the success block...
@@ -288,7 +288,7 @@ describe(PROPS.NAME, function() {
             'B'
           ]
         });
-        const newInstance =  new BoltInstance('');
+        const newInstance =  new AbyInstance('');
         newInstance.runTask('SEQUENCE').then(() => {
           expect(newInstance.env).to.equal('AB');
           done();
@@ -318,7 +318,7 @@ describe(PROPS.NAME, function() {
             'B'
           ]
         });
-        const newInstance =  new BoltInstance('');
+        const newInstance =  new AbyInstance('');
         newInstance.runTask('CONCURRENT').then(() => {
           const timeDiff = newInstance.BStarted - newInstance.AStarted;
           expect(timeDiff < 250).to.equal(true);
@@ -341,7 +341,7 @@ describe(PROPS.NAME, function() {
         opts.pre  = 'A';
         opts.post = 'C';
         genTaskFile('taskB.js', opts);
-        const myInstance = new BoltInstance('');
+        const myInstance = new AbyInstance('');
         myInstance.runTask('B').then(() => {
           expect(myInstance.env).to.equal('ABC');
           done();
@@ -361,7 +361,7 @@ describe(PROPS.NAME, function() {
         opts.name = 'B';
         opts.post = 'A';
         genTaskFile('B.js', opts);
-        const myInstance = new BoltInstance('');
+        const myInstance = new AbyInstance('');
         myInstance.runTask('A').then(() => {
           expect(myInstance.env).to.equal('AB');
           done();
@@ -384,17 +384,43 @@ describe(PROPS.NAME, function() {
           }
         };
         genTaskFile('task.js', opts);
-        const myInstance = new BoltInstance('TEST');
+        const myInstance = new AbyInstance('TEST');
         myInstance.runTask('A').then(() => {
           done();
         });
       })
     });
   });
+  describe('task', () => {
+    before(() => {
+      fs.writeFileSync(PROPS.CONFIG, 'module.exports = {test: true}');
+      fs.mkdirSync(PROPS.DIR);
+    });
+    after(cleanUp);
+    describe('creation', () => {
+      it('throws error when missing props', () => {
+        const PARENT_MSG = 'Missing parent instance...';
+        const PROP_MSG = 'Task options missing properties...';
+        const opts = {
+          name: 'A',
+          doc : 'A task',
+          func: () => {}
+        };
+        genTaskFile('A.js', opts);
+        const newInstance = new AbyInstance();
+        expect(() => new AbyTask()).to.throw(Error, PARENT_MSG);
+        expect(() => new AbyTask(newInstance, {})).to.throw(Error, PROP_MSG);
+        expect(() => new AbyTask(newInstance, {
+          name: 'A',
+          doc : 'Stringy',
+          func: 'A function'
+        })).to.throw(Error, PROP_MSG);
+        expect(() => new AbyTask(newInstance, {
+          name: 'A',
+          doc : 'A sequence',
+          sequence: ['B', 'C']
+        })).to.not.throw(Error);
+      });
+    });
+  })
 });
-
-/**
-  * TODO
-  * 3. Correctly generates task pool(concurrent and sequential tasks)
-  * 6. pre/post hook is covered by getPool testing sequenced pre/post?
-*/

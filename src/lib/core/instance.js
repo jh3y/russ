@@ -1,23 +1,23 @@
 const winston  = require('winston'),
   fs           = require('fs'),
-  BoltTask     = require('./task');
+  AbyTask     = require('./task');
 
 /**
-  * @class BoltInstance
+  * @class AbyInstance
   *
-  * creates a new BoltInstance with an optional environment variable
+  * creates a new AbyInstance with an optional environment variable
   * @param env {string} - define runtime environment
-  * @returns {Object} - BoltInstance
+  * @returns {Object} - AbyInstance
 */
-class BoltInstance {
+class AbyInstance {
   constructor(env) {
     let tasks;
     let config;
     try {
-      config = require(`${process.cwd()}/.boltrc`);
-      tasks = fs.readdirSync('bolt.tasks');
+      config = require(`${process.cwd()}/.abyrc`);
+      tasks = fs.readdirSync('aby.tasks');
     } catch (err) {
-      throw Error('Missing bolt files...');
+      throw Error('Missing aby files...');
     }
     this.env = env;
     this.config = config;
@@ -52,7 +52,7 @@ class BoltInstance {
         } else {
           let task;
           try {
-            task = new BoltTask(this, this.tasks[name]);
+            task = new AbyTask(this, this.tasks[name]);
           } catch (err) {
             reject(err.toString());
           }
@@ -115,7 +115,6 @@ class BoltInstance {
           resolve();
         })
         .catch((err) => {
-          winston.error(err.toString());
           reject(err);
         });
     });
@@ -136,7 +135,7 @@ class BoltInstance {
   */
   register(files) {
     const registerTask = (opts) => {
-      const ERR_MSG = 'Task missing properties...';
+      const ERR_MSG = `Task ${opts.name} missing properties...`;
       const hasFunc = opts.func && typeof opts.func === 'function';
       const isDel   = opts.concurrent || opts.sequence;
       if (opts.name && opts.doc && (hasFunc || isDel))
@@ -144,10 +143,10 @@ class BoltInstance {
       else
         throw new Error(ERR_MSG);
     };
-    if (files.length === 0) throw new Error('No tasks defined in bolt.tasks');
+    if (files.length === 0) throw new Error('No tasks defined in aby.tasks');
     this.tasks = {};
     for (const file of files) {
-      const taskOpts = require(`${process.cwd()}/bolt.tasks/${file}`);
+      const taskOpts = require(`${process.cwd()}/aby.tasks/${file}`);
       if (this.tasks[taskOpts.name])
         throw new Error(`Task ${taskOpts.name} already defined...`);
       if (Array.isArray(taskOpts))
@@ -158,4 +157,4 @@ class BoltInstance {
   }
 }
 
-module.exports = BoltInstance;
+module.exports = AbyInstance;

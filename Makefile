@@ -7,7 +7,6 @@ ESLINT = $(MODULES)/eslint
 
 SRC = src/
 DEST = ./
-CLEANUP = lib test bolt.tasks
 
 TESTOPTS = -u tdd --reporter spec
 
@@ -22,9 +21,6 @@ build: ## Build bolt
 
 watch: build ## Watcher for babel
 	$(BABEL) $(SRC) --watch -d $(DEST)
-
-clean: ## Clean out build files
-	rm -rf $(CLEANUP) && rm .boltrc
 
 lint: ## Lint src using es2015
 	$(ESLINT) $(SRC)
