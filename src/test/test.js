@@ -43,7 +43,7 @@ const cleanUp = function () {
 
 describe(PROPS.NAME, function() {
   describe('instance', function() {
-    describe('setup', function () {
+    describe('initial setup', function () {
       afterEach(cleanUp);
       it('throws error when missing setup files', function() {
         const MISSING_MSG = `Missing ${PROPS.NAME} files...`;
@@ -55,7 +55,7 @@ describe(PROPS.NAME, function() {
       });
     });
 
-    describe('registry', function() {
+    describe('task registry', function() {
       beforeEach(function() {
         fs.writeFileSync(PROPS.CONFIG, '{}');
         fs.mkdirSync(PROPS.DIR);
@@ -117,9 +117,28 @@ describe(PROPS.NAME, function() {
         genTaskFile('A.js', optsA);
         genTaskFile('B.js', optsB);
         expect(() => new BoltInstance()).to.throw(Error, ERR_MSG);
-      })
+      });
     });
-    describe('running', () => {
+    describe('task pooling', () => {
+      before(() => {
+        fs.writeFileSync(PROPS.CONFIG, 'module.exports = {test: true}');
+        fs.mkdirSync(PROPS.DIR);
+      });
+      after(cleanUp);
+      it('generates correct task pool', () => {
+        const opts = {
+          name: 'A',
+          doc : 'First task',
+          func: () => {}
+        };
+        genTaskFile('A.js', opts);
+        const newInstance = new BoltInstance();
+        const pool = newInstance.getPool('A');
+        expect(pool.length).to.equals(1);
+        expect(pool.toString()).to.equals('A');
+      });
+    });
+    describe('running tasks', () => {
       before(() => {
         winston.info = sinon.stub();
         winston.profile = sinon.stub();
