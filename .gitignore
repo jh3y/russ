@@ -1,1 +1,4 @@
-public/
+npm-debug.log
+.boltrc
+bolt.tasks/
+test/
