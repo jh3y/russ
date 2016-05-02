@@ -69,6 +69,7 @@ class BoltInstance {
     const pushToPool = (name, parent) => {
       if (pool.indexOf(name) !== -1) return;
       const task = this.tasks[name];
+      if (!task) throw new Error(`Task ${name} is not defined...`);
       const clean = (a) => {
         return a && (pool.indexOf(a) === -1);
       };

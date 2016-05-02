@@ -120,11 +120,11 @@ describe(PROPS.NAME, function() {
       });
     });
     describe('task pooling', () => {
-      before(() => {
+      beforeEach(() => {
         fs.writeFileSync(PROPS.CONFIG, 'module.exports = {test: true}');
         fs.mkdirSync(PROPS.DIR);
       });
-      after(cleanUp);
+      afterEach(cleanUp);
       it('generates correct task pool', () => {
         const opts = {
           name: 'A',
@@ -156,6 +156,50 @@ describe(PROPS.NAME, function() {
         const pool = newInstance.getPool('B');
         expect(pool.length).to.equals(2);
         expect(pool.toString()).to.equals('A,B');
+      });
+      it('deeps searches to get all tasks for pool', () => {
+        const opts = {
+          name: 'A',
+          doc: 'A',
+          post: 'B',
+          func: () => {}
+        };
+        genTaskFile('A.js', opts);
+        opts.name = 'B';
+        opts.pre  = 'A';
+        opts.post = 'C';
+        genTaskFile('B.js', opts);
+        opts.name = 'C';
+        opts.pre  = 'B';
+        opts.post = 'D';
+        genTaskFile('C.js', opts);
+        opts.name = 'D';
+        opts.pre  = 'C';
+        opts.post = 'E';
+        genTaskFile('D.js', opts);
+        opts.name = 'E';
+        opts.pre  = 'D';
+        genTaskFile('E.js', opts);
+        const newInstance = new BoltInstance();
+        const expectedRes = 'A,B,C,D,E';
+        let pool = newInstance.getPool('A');
+        expect(pool.toString()).to.equal(expectedRes);
+        pool = newInstance.getPool('C');
+        expect(pool.toString()).to.equal(expectedRes);
+        pool = newInstance.getPool('E');
+        expect(pool.toString()).to.equal(expectedRes);
+      });
+      it('throws error when task is not defined', () => {
+        const opts = {
+          name: 'A',
+          doc : 'Some task',
+          post: 'B',
+          func: () => {}
+        };
+        genTaskFile('A.js', opts);
+        // Ensures we don't get a cached version that breaks our test.
+        const newInstance = new BoltInstance();
+        expect(() => newInstance.getPool('A')).to.throw(Error, 'Task B is not defined');
       })
     });
     describe('running tasks', () => {
