@@ -54,6 +54,7 @@ class AbyInstance {
           try {
             task = new AbyTask(this, this.tasks[name]);
           } catch (err) {
+            winston.error(err.toString());
             reject(err.toString());
           }
           task.run(this.env)
