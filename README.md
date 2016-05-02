@@ -1,4 +1,7 @@
-# AbY
+![alt tag](https://raw.github.com/jh3y/pics/master/aby/aby-sm.png)
+AbY
+===
+_just another task runner!_
 
 :rabbit::zap:
 
