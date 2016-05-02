@@ -66,11 +66,12 @@ class BoltInstance {
 
   getPool(name) {
     const pool = [];
-    const clean = (a) => {
-      return a && (pool.indexOf(a) === -1);
-    };
     const pushToPool = (name, parent) => {
+      if (pool.indexOf(name) !== -1) return;
       const task = this.tasks[name];
+      const clean = (a) => {
+        return a && (pool.indexOf(a) === -1);
+      };
       let tasks;
       if (task.sequence)
         tasks = task.sequence.filter(clean);
@@ -80,7 +81,7 @@ class BoltInstance {
       if (parent) {
         const parentTask = this.tasks[parent];
         const pIdx = pool.indexOf(parent);
-        const idx = (name === parentTask.post) ? (pIdx + 1) : pIdx;
+        const idx = (name === parentTask.pre) ? pIdx : (pIdx + 1);
         pool.splice(idx, 0, name);
       } else if (!task.sequence) pool.push(name);
 

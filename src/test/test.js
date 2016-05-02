@@ -137,6 +137,26 @@ describe(PROPS.NAME, function() {
         expect(pool.length).to.equals(1);
         expect(pool.toString()).to.equals('A');
       });
+      it('does not duplicate tasks in the pool', () => {
+        const opts = {
+          name: 'A',
+          doc : 'First task',
+          func: function() {}
+        };
+        genTaskFile('A.js', opts);
+        const optsB = {
+          name: 'B',
+          pre: 'A',
+          post: 'A',
+          doc: 'Greedy task',
+          func: () => {}
+        };
+        genTaskFile('B.js', optsB);
+        const newInstance = new BoltInstance();
+        const pool = newInstance.getPool('B');
+        expect(pool.length).to.equals(2);
+        expect(pool.toString()).to.equals('A,B');
+      })
     });
     describe('running tasks', () => {
       before(() => {
@@ -311,16 +331,9 @@ describe(PROPS.NAME, function() {
 
 /**
   * TODO
-  * INSTANCE TESTING
-  TICK * 1. Generating new BoltInstance throws error when no .boltrc or bolt.tasks or
-  TICK * no tasks in bolt.tasks folder
-  TICK * 2. Correctly registers tasks, NO duplicates, throw error.
   * 3. Correctly generates task pool(concurrent and sequential tasks)
-  TICK not sure it's feasible * 4. Potentially test the info function to check output
-  TICK * 5. Task gen should fail where a task has no name, func, or description
-  * 6. pre/post hook is covered by getPool testing
-  TICK * 7. But can we test if I run 'B', 'A' and 'C' are also run(and in order???)
-  TICK * 8. Testing of the actual "run" task will be tricky
+  * 6. pre/post hook is covered by getPool testing sequenced pre/post?
+
   * TASK Testing
   * 1. Test that a task is correctly generated with the correct content?
   * 2. Task run function, check that BoltInstance has the correct properties
