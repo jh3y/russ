@@ -219,7 +219,7 @@ describe(PROPS.NAME, function() {
           name: 'A',
           doc : 'A dummy task',
           func: function(instance) {
-            instance.__parent.env += this.name;
+            instance.__instance.env += this.name;
             instance.resolve();
           }
         };
@@ -273,7 +273,7 @@ describe(PROPS.NAME, function() {
           name: 'A',
           doc : 'A sequence task',
           func: function(instance) {
-            instance.__parent.env += this.name;
+            instance.__instance.env += this.name;
             instance.resolve();
           }
         };
@@ -299,14 +299,14 @@ describe(PROPS.NAME, function() {
           name: 'A',
           doc : 'A sequence task',
           func: function(instance) {
-            instance.__parent[`${this.name}Started`] = new Date().getTime();
+            instance.__instance[`${this.name}Started`] = new Date().getTime();
             setTimeout(instance.resolve, 250);
           }
         };
         genTaskFile('A.js', opts);
         opts.name = 'B';
         opts.func = function(instance) {
-          instance.__parent[`${this.name}Started`] = new Date().getTime();
+          instance.__instance[`${this.name}Started`] = new Date().getTime();
           instance.resolve();
         }
         genTaskFile('B.js', opts);
@@ -330,7 +330,7 @@ describe(PROPS.NAME, function() {
           name: 'A',
           doc : 'A dummy task',
           func: function(instance) {
-            instance.__parent.env += this.name;
+            instance.__instance.env += this.name;
             instance.resolve();
           }
         };
@@ -353,7 +353,7 @@ describe(PROPS.NAME, function() {
           doc : 'A dummy task',
           post: 'B',
           func: function(instance) {
-            instance.__parent.env += this.name;
+            instance.__instance.env += this.name;
             instance.resolve();
           }
         };
@@ -380,6 +380,8 @@ describe(PROPS.NAME, function() {
             chai.expect(instance.env).to.equal('TEST');
             chai.expect(instance.config).to.not.be.undefined;
             chai.expect(instance.config.test).to.equals(true);
+            chai.expect(instance.log).to.not.be.undefined;
+            chai.expect(instance.log.info).to.not.be.undefined;
             instance.resolve();
           }
         };
@@ -399,7 +401,7 @@ describe(PROPS.NAME, function() {
     after(cleanUp);
     describe('creation', () => {
       it('throws error when missing props', () => {
-        const PARENT_MSG = 'Missing parent instance...';
+        const INSTANCE_MSG = 'Missing instance definition...';
         const PROP_MSG = 'Task options missing properties...';
         const opts = {
           name: 'A',
@@ -408,7 +410,7 @@ describe(PROPS.NAME, function() {
         };
         genTaskFile('A.js', opts);
         const newInstance = new AbyInstance();
-        expect(() => new AbyTask()).to.throw(Error, PARENT_MSG);
+        expect(() => new AbyTask()).to.throw(Error, INSTANCE_MSG);
         expect(() => new AbyTask(newInstance, {})).to.throw(Error, PROP_MSG);
         expect(() => new AbyTask(newInstance, {
           name: 'A',

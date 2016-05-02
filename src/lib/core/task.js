@@ -3,16 +3,16 @@ const winston  = require('winston');
   * @class AbyTask
   * task instance for Aby.
   *
-  * @constructor(parent, opts)
-  * @param parent {AbyInstance} - defines task parent to bind to.
+  * @constructor(instance, opts)
+  * @param instance {AbyInstance} - defines task instance to bind to.
   * @param opts {Object} - defines logistics of task such as dependencies
   * pre/post hooks etc.
 */
 class AbyTask {
-  constructor(parent, opts) {
+  constructor(instance, opts) {
     /* Assign all opts to task */
-    Object.assign(this, opts, { parent });
-    if (!this.parent) throw Error('Missing parent instance...');
+    Object.assign(this, opts, { instance });
+    if (!this.instance) throw Error('Missing instance definition...');
     /**
       * If the task is dependant on modules and these are declared in the task
       * definition, require each and push into an Array to be used at run time
@@ -21,7 +21,7 @@ class AbyTask {
     if (!this.name || !this.doc || !hasFunc)
       throw Error('Task options missing properties...');
     this.deps = [];
-    if (opts.deps && opts.deps.length) {
+    if (opts.deps && opts.deps.length)
       for (const dep of opts.deps) {
         let module;
         try {
@@ -34,7 +34,6 @@ class AbyTask {
         if (!module) throw Error(`Module ${dep} not found, installed?`);
         this.deps.push(module);
       }
-    }
   }
   /**
     * runs task
@@ -63,13 +62,13 @@ class AbyTask {
         * that wishes to run another task or wish to run a task within a task.
       */
       this.func(...this.deps, {
-        __parent: this.parent,
-        env     : this.parent.env,
-        config  : this.parent.config,
-        log     : winston,
-        resolve : resolve,
-        reject  : reject,
-        run     : this.parent.runTask.bind(this.parent)
+        __instance: this.instance,
+        env       : this.instance.env,
+        config    : this.instance.config,
+        log       : winston,
+        resolve   : resolve,
+        reject    : reject,
+        run       : this.instance.runTask.bind(this.instance)
       });
     });
   }
