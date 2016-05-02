@@ -177,13 +177,16 @@ describe(PROPS.NAME, function() {
           name: 'A',
           doc : 'A sequence task',
           func: function(instance) {
-            instance[`${this.name}Started`] = new Date().getTime();
-            instance.__parent.env += this.name;
-            setTimeout(instance.resolve, 1000);
+            instance.__parent[`${this.name}Started`] = new Date().getTime();
+            setTimeout(instance.resolve, 250);
           }
         };
         genTaskFile('A.js', opts);
         opts.name = 'B';
+        opts.func = function(instance) {
+          instance.__parent[`${this.name}Started`] = new Date().getTime();
+          instance.resolve();
+        }
         genTaskFile('B.js', opts);
         genTaskFile('CONCURRENT.js', {
           name: 'CONCURRENT',
@@ -195,8 +198,8 @@ describe(PROPS.NAME, function() {
         });
         const newInstance =  new BoltInstance('');
         newInstance.runTask('CONCURRENT').then(() => {
-          console.log(newInstance);
-          expect(newInstance.env).to.equal('AB');
+          const timeDiff = newInstance.BStarted - newInstance.AStarted;
+          expect(timeDiff < 250).to.equal(true);
           done();
         });
       });
