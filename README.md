@@ -1,3 +1,10 @@
+[![NPM](https://nodei.co/npm/aby.png?downloads=true)](https://nodei.co/npm/aby/)
+
+[![Build Status](https://travis-ci.org/jh3y/aby.svg?branch=master)](https://travis-ci.org/jh3y/aby)
+![img](https://img.shields.io/badge/version-0.9.0-000000.svg)
+![img](https://img.shields.io/badge/language-JS-9a12b3.svg)
+![img](https://img.shields.io/badge/license-MIT-22a7f0.svg)
+
 ![alt tag](https://raw.github.com/jh3y/pics/master/aby/aby-sm.png)
 AbY - _a node script runner_
 ===
@@ -58,7 +65,27 @@ $ echo "module.exports = {};" > .abyrc
 
 ## Usage
 Now we're all set up we can look at defining some tasks and config for `AbY` to use.
+### Basic CLI Usage
+First of all though, we must explain how the CLI works.
+
+If we simply run;
+```shell
+$ aby
+```
+`AbY` will display any tasks that are available and their respective self-documented description.
+
+To run a task, we pass the task name to `AbY`. We can run more than one task at once and if we do, they will run concurrently. For example;
+```shell
+$ aby compile:scripts compile:styles
+```
+Lastly, we can pass an optional `env` option when we run `AbY`. This can be used within tasks to trigger optional behaviour such as say minifying files.
+```shell
+$ aby compile:scripts --env prod
+```
+
 ### Defining tasks
+Use of `AbY` is done so through defining tasks.
+
 Each task is defined by an object. Each task file within `aby.tasks` should look to either export an `Object` or an `Array` of `Object`s.
 
 Defining tasks __is__ simple but there are many options.
@@ -90,6 +117,8 @@ module.exports = {
   ]
 }
 ```
+__NOTE::__ It's important to note that every task returns a `Promise` and resolving or rejecting within task logic is crucial when running more than one task at a time and when you wish for the profiler to work properly.
+
 #### Options
 * `name` `{String}` - task name and name by which task will be invoked
 * `doc` `{String}` - brief description of task that is displayed when viewing available tasks
@@ -101,7 +130,181 @@ module.exports = {
 * `func` `{Function}` - Logic for a task. The parameters are the defined dependencies followed by an `aby` Object.
 
 #### Declaring `func`
+One important part of declaring a task function is knowing the required anatomy of our tasks.
+The arguments passed to our task are dependencies defined within `deps` followed by an Object that contains some important references. For example;
+```javascript
+deps: [
+  'A',
+  'B'
+],
+func: (a, b, aby) => {}
+```
+#### The `aby` object
+When you define a function for your task, the last argument passed to that function will be an object we will call the `aby` object.
 
+The `aby` object exposes the following things;
+* config {Object} - the configuration defined within `.abyrc`
+* env {String} - the `aby` env defined when we invoke `aby` (`$ aby compile --env dist`)
+* resolve {Function} - a function that tells `aby` that our task has finished successfully
+* reject {Function} - a function that takes an error string as an argument and tells `aby` our task has failed
+* log {Object} - an instance of the `aby` logger. `aby` uses `winston` and instead of requiring an extra logger you can make use of `info`, `log`, `warn`, `silly`, `error` and `success` logging by using `log`.
+* run {Function} - a run function that takes another task name as an argument. This allows you to run tasks from within a task.
 
+### Walkthrough examples
+The documentation so far may make `aby` seem more complicated than it actually is. It may be easier to work through some common examples. For more examples see some of my own recipes [here](https://github.com/jh3y/aby-recipes).
 
-@[jh3y](twitter.com/_jh3y) 2016
+#### BrowserSync local static server
+For our first task we are going to create a local static server with reloading and CSS injection.
+
+The dependencies for our task are going to be `browser-sync`, `vinyl-source-stream`, `vinyl-buffer` and `vinyl-file`.
+
+First we install our dependencies;
+```shell
+$ npm install browser-sync vinyl-file vinyl-source-stream vinyl-buffer
+```
+Then we define our task structure in `aby.tasks/server.js`;
+```javascript
+module.exports = {
+  name: 'server',
+  doc: 'set up BrowserSync static server with liveReload and CSS injection',
+  deps: [
+    'browser-sync',
+    'vinyl-source-stream',
+    'vinyl-buffer',
+    'vinyl-file'
+  ],
+  func: (browserSync, vss, vb, vf, aby) => {
+    const server = browserSync.create();
+    server.init({
+      name: 'abyServer',
+      server: 'public/',
+      port  : 2222
+    });
+    server.watch('public/**/*.*', (evt, file) => {
+      if (evt === 'change' && file.indexOf('.css') === -1)
+        server.reload();
+      if (evt === 'change' && file.indexOf('.css') !== -1)
+        vf.readSync(file)
+          .pipe(vss(file))
+          .pipe(vb())
+          .pipe(server.stream());
+    });
+  }
+};
+```
+Preferably, we don't want to leave plugin options and source paths inside our task logic so we move those into `.abyrc` and update our task logic
+```javascript
+func: (browserSync, vss, vb, vf, aby) => {
+  const server = browserSync.create();
+  server.init(aby.config.pluginOpts.browsersync);
+  server.watch(aby.config.paths.sources.overwatch, (evt, file) => {
+    if (evt === 'change' && file.indexOf('.css') === -1)
+      server.reload();
+    if (evt === 'change' && file.indexOf('.css') !== -1)
+      vf.readSync(file)
+        .pipe(vss(file))
+        .pipe(vb())
+        .pipe(server.stream());
+  });
+}
+```
+To run our task;
+```shell
+$ aby server
+```
+To improve this further we may wish to add a `pre` hook that compiles our sources. This could be a concurrent task that ensures there are files to serve for BrowserSync.
+
+#### A compilation task
+For a compilation task we will look at compiling some markup files.
+```javascript
+{
+  name: 'compile:markup',
+  doc : 'compile markup',
+  deps: [
+    'fs',
+    'glob',
+    'pug',
+    'path',
+    'mkdirp'
+  ],
+  func: (fs, glob, pug, path, mkdirp, aby) => {
+    const outputDir = aby.config.paths.destinations.markup;
+    mkdirp.sync(outputDir);
+    glob(aby.config.paths.sources.docs, (err, files) => {
+      for (const file of files) {
+        try {
+          const data = aby.config.pluginOpts.pug.data,
+            markup = pug.compileFile(`${process.cwd()}/${file}`)(data),
+            name = path.basename(file, '.pug'),
+            loc = `${outputDir}${name}.html`;
+          fs.writeFileSync(loc, markup);
+          aby.log.info(`${loc} created!`);
+        } catch (err) {
+          aby.reject(err);
+        }
+      }
+      aby.resolve();
+    });
+  }
+}
+```
+
+#### A watcher
+A common task will be watching some source and running some task when a file is edited. In this example, we are watching for changed in our scripts and running a `compile:scripts` task when things change. We use `gaze` to do our watching.
+```javascript
+{
+  name: 'watch:scripts',
+  doc: 'watch for script source changes then run and compile',
+  deps: [
+    'gaze'
+  ],
+  func: function(gaze, aby) {
+    gaze(aby.config.paths.sources.scripts, (err, watcher) => {
+      watcher.on('changed', (filepath) => {
+        aby.log.info(`${filepath} changed!`);
+        aby.run('compile:scripts');
+      });
+    });
+  }
+}
+```
+
+#### Concurrent development tasks
+How about some tasks that define common things that we may want to do with our source. For example, we could have a `development` task that sets up a global watcher and our server task from above.
+```javascript
+module.exports = [
+  {
+    name: 'compile',
+    doc : 'compiles sources',
+    concurrent: [
+      'compile:styles',
+      'compile:scripts',
+      'compile:markup'
+    ]
+  },
+  {
+    name: 'watch',
+    doc: 'watch files and do things',
+    concurrent: [
+      'watch:scripts',
+      'watch:styles',
+      'watch:markup'
+    ]
+  },
+  {
+    name: 'develop',
+    doc: 'lets develop',
+    concurrent: [
+      'watch',
+      'server'
+    ]
+  }
+];
+```
+## Under the hood
+`AbY` is developed using `babel`. It relies heavily on `Promise`s for profiling and other behavioural features.
+
+===
+Any problems or questions, feel free to post an issue/PR or tweet me, [@_jh3y](https://twitter.com/@_jh3y)!
+
+_made with :heart: by [jh3y](twitter.com/_jh3y) 2016_
