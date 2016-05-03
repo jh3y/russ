@@ -13,7 +13,7 @@
     "aby": "./bin/aby"
   },
   "engines": {
-    "node": ">= 0.8.0"
+    "node": ">= 4.0.0"
   },
   "dependencies": {
     "colors": "^1.1.2",
