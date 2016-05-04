@@ -54,6 +54,7 @@ That's where `russ` has come from. It doesn't do anything overly special but pro
 
 ## Setup
 So. You've got this far and decided you want to try out `russ` :smile:
+
 1. First, install `russ`;
 ```shell
 $ npm install -g russ
