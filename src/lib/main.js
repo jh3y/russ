@@ -1,5 +1,5 @@
 /**
-  * AbY - just another task runner
+  * russ - node scripts runner
   *
   * @author jh3y 2016
   * @license MIT
@@ -8,15 +8,15 @@ const pkg      = require('../package.json'),
   program      = require('commander'),
   setup        = require('./setup'),
   winston      = require('winston'),
-  AbyInstance = require('./core/instance');
+  RussInstance = require('./core/instance');
 
-let abyInstance;
+let instance;
 
 const handleCommand = (commands) => {
     for (const task of commands)
       try {
-        abyInstance = new AbyInstance(program.env);
-        abyInstance.runTask(task);
+        instance = new RussInstance(program.env);
+        instance.runTask(task);
       } catch (err) {
         winston.error(err.toString());
       }
@@ -34,8 +34,8 @@ try {
   setupInterface();
   program.parse(process.argv);
   /* Unless handleCommmand is invoked we create an instance and show info */
-  abyInstance = new AbyInstance();
-  if (program.rawArgs.length === 2) abyInstance.info();
+  instance = new RussInstance();
+  if (program.rawArgs.length === 2) instance.info();
 } catch (err) {
   winston.error(err.toString());
 }

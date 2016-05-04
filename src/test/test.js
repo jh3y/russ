@@ -3,13 +3,13 @@ const expect   = require('chai').expect,
   sinon        = require('sinon'),
   fs           = require('fs'),
   winston      = require('winston'),
-  AbyInstance = require('../lib/core/instance'),
-  AbyTask     = require('../lib/core/task');
+  RussInstance = require('../lib/core/instance'),
+  RussTask     = require('../lib/core/task');
 
 const PROPS = {
-  NAME: 'aby',
-  CONFIG: '.abyrc',
-  DIR: 'aby.tasks'
+  NAME: 'russ',
+  CONFIG: '.russrc',
+  DIR: 'russ.tasks'
 };
 
 const genTaskFile = (name, opts) => {
@@ -47,11 +47,11 @@ describe(PROPS.NAME, function() {
       afterEach(cleanUp);
       it('throws error when missing setup files', function() {
         const MISSING_MSG = `Missing ${PROPS.NAME} files...`;
-        expect(() => new AbyInstance()).to.throw(Error, MISSING_MSG);
+        expect(() => new RussInstance()).to.throw(Error, MISSING_MSG);
         fs.writeFileSync(PROPS.CONFIG, '{}');
-        expect(() => new AbyInstance()).to.throw(Error, MISSING_MSG);
+        expect(() => new RussInstance()).to.throw(Error, MISSING_MSG);
         fs.mkdirSync(PROPS.DIR);
-        expect(() => new AbyInstance()).to.throw(Error);
+        expect(() => new RussInstance()).to.throw(Error);
       });
     });
 
@@ -65,7 +65,7 @@ describe(PROPS.NAME, function() {
       it('empty tasks throw error', () => {
         const ERR_MSG = 'Task undefined missing properties...';
         genTaskFile('task.js', {});
-        expect(() => new AbyInstance()).to.throw(Error, ERR_MSG);
+        expect(() => new RussInstance()).to.throw(Error, ERR_MSG);
       });
       it('throws error where task missing props', () => {
         const ERR_MSG = 'Task A missing properties...';
@@ -74,7 +74,7 @@ describe(PROPS.NAME, function() {
           doc : 'A failing task'
         };
         genTaskFile('task.js', opts);
-        expect(() => new AbyInstance()).to.throw(Error, ERR_MSG);
+        expect(() => new RussInstance()).to.throw(Error, ERR_MSG);
       });
       it('registers tasks', () => {
         const opts = {
@@ -83,7 +83,7 @@ describe(PROPS.NAME, function() {
           func: function(){}
         };
         genTaskFile('task.js', opts);
-        const instance = new AbyInstance();
+        const instance = new RussInstance();
         expect(instance.tasks.A).to.not.be.undefined;
       });
       it('registers multiple tasks', () => {
@@ -99,7 +99,7 @@ describe(PROPS.NAME, function() {
         };
         genTaskFile('A.js', optsA);
         genTaskFile('B.js', optsB);
-        let myInstance = new AbyInstance();
+        let myInstance = new RussInstance();
         expect(Object.keys(myInstance.tasks).length).to.equals(2);
       });
       it('does not allow duplicates', () => {
@@ -116,7 +116,7 @@ describe(PROPS.NAME, function() {
         };
         genTaskFile('A.js', optsA);
         genTaskFile('B.js', optsB);
-        expect(() => new AbyInstance()).to.throw(Error, ERR_MSG);
+        expect(() => new RussInstance()).to.throw(Error, ERR_MSG);
       });
     });
     describe('task pooling', () => {
@@ -132,7 +132,7 @@ describe(PROPS.NAME, function() {
           func: () => {}
         };
         genTaskFile('A.js', opts);
-        const newInstance = new AbyInstance();
+        const newInstance = new RussInstance();
         const pool = newInstance.getPool('A');
         expect(pool.length).to.equals(1);
         expect(pool.toString()).to.equals('A');
@@ -152,7 +152,7 @@ describe(PROPS.NAME, function() {
           func: () => {}
         };
         genTaskFile('B.js', optsB);
-        const newInstance = new AbyInstance();
+        const newInstance = new RussInstance();
         const pool = newInstance.getPool('B');
         expect(pool.length).to.equals(2);
         expect(pool.toString()).to.equals('A,B');
@@ -180,7 +180,7 @@ describe(PROPS.NAME, function() {
         opts.name = 'E';
         opts.pre  = 'D';
         genTaskFile('E.js', opts);
-        const newInstance = new AbyInstance();
+        const newInstance = new RussInstance();
         const expectedRes = 'A,B,C,D,E';
         let pool = newInstance.getPool('A');
         expect(pool.toString()).to.equal(expectedRes);
@@ -198,7 +198,7 @@ describe(PROPS.NAME, function() {
         };
         genTaskFile('A.js', opts);
         // Ensures we don't get a cached version that breaks our test.
-        const newInstance = new AbyInstance();
+        const newInstance = new RussInstance();
         expect(() => newInstance.getPool('A')).to.throw(Error, 'Task B is not defined');
       })
     });
@@ -224,7 +224,7 @@ describe(PROPS.NAME, function() {
           }
         };
         genTaskFile('task.js', opts);
-        const newInstance = new AbyInstance('');
+        const newInstance = new RussInstance('');
         newInstance.runTask('A').then(() => {
           expect(newInstance.env).to.equals('A');
           done();
@@ -240,7 +240,7 @@ describe(PROPS.NAME, function() {
           func: function () {}
         };
         genTaskFile('A.js', opts);
-        const newInstance = new AbyInstance();
+        const newInstance = new RussInstance();
         const ERR_MSG = 'Error: Module fake-module not found, installed?';
         newInstance.runTask('A')
           .then(() => {
@@ -259,7 +259,7 @@ describe(PROPS.NAME, function() {
           }
         };
         genTaskFile('A.js', opts);
-        const newInstance = new AbyInstance('');
+        const newInstance = new RussInstance('');
         newInstance.runTask('A')
           .then(() => {
             // Will never run the success block...
@@ -288,7 +288,7 @@ describe(PROPS.NAME, function() {
             'B'
           ]
         });
-        const newInstance =  new AbyInstance('');
+        const newInstance =  new RussInstance('');
         newInstance.runTask('SEQUENCE').then(() => {
           expect(newInstance.env).to.equal('AB');
           done();
@@ -318,7 +318,7 @@ describe(PROPS.NAME, function() {
             'B'
           ]
         });
-        const newInstance =  new AbyInstance('');
+        const newInstance =  new RussInstance('');
         newInstance.runTask('CONCURRENT').then(() => {
           const timeDiff = newInstance.BStarted - newInstance.AStarted;
           expect(timeDiff < 250).to.equal(true);
@@ -341,7 +341,7 @@ describe(PROPS.NAME, function() {
         opts.pre  = 'A';
         opts.post = 'C';
         genTaskFile('taskB.js', opts);
-        const myInstance = new AbyInstance('');
+        const myInstance = new RussInstance('');
         myInstance.runTask('B').then(() => {
           expect(myInstance.env).to.equal('ABC');
           done();
@@ -361,7 +361,7 @@ describe(PROPS.NAME, function() {
         opts.name = 'B';
         opts.post = 'A';
         genTaskFile('B.js', opts);
-        const myInstance = new AbyInstance('');
+        const myInstance = new RussInstance('');
         myInstance.runTask('A').then(() => {
           expect(myInstance.env).to.equal('AB');
           done();
@@ -386,7 +386,7 @@ describe(PROPS.NAME, function() {
           }
         };
         genTaskFile('task.js', opts);
-        const myInstance = new AbyInstance('TEST');
+        const myInstance = new RussInstance('TEST');
         myInstance.runTask('A').then(() => {
           done();
         });
@@ -409,15 +409,15 @@ describe(PROPS.NAME, function() {
           func: () => {}
         };
         genTaskFile('A.js', opts);
-        const newInstance = new AbyInstance();
-        expect(() => new AbyTask()).to.throw(Error, INSTANCE_MSG);
-        expect(() => new AbyTask(newInstance, {})).to.throw(Error, PROP_MSG);
-        expect(() => new AbyTask(newInstance, {
+        const newInstance = new RussInstance();
+        expect(() => new RussTask()).to.throw(Error, INSTANCE_MSG);
+        expect(() => new RussTask(newInstance, {})).to.throw(Error, PROP_MSG);
+        expect(() => new RussTask(newInstance, {
           name: 'A',
           doc : 'Stringy',
           func: 'A function'
         })).to.throw(Error, PROP_MSG);
-        expect(() => new AbyTask(newInstance, {
+        expect(() => new RussTask(newInstance, {
           name: 'A',
           doc : 'A sequence',
           sequence: ['B', 'C']

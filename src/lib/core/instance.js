@@ -1,23 +1,23 @@
 const winston  = require('winston'),
   fs           = require('fs'),
-  AbyTask     = require('./task');
+  RussTask     = require('./task');
 
 /**
-  * @class AbyInstance
+  * @class RussInstance
   *
-  * creates a new AbyInstance with an optional environment variable
+  * creates a new russInstance with an optional environment variable
   * @param env {string} - define runtime environment
-  * @returns {Object} - AbyInstance
+  * @returns {Object} - russInstance
 */
-class AbyInstance {
+class RussInstance {
   constructor(env) {
     let tasks;
     let config;
     try {
-      config = require(`${process.cwd()}/.abyrc`);
-      tasks = fs.readdirSync('aby.tasks');
+      config = require(`${process.cwd()}/.russrc`);
+      tasks = fs.readdirSync('russ.tasks');
     } catch (err) {
-      throw Error('Missing aby files...');
+      throw Error('Missing russ files...');
     }
     this.env = env;
     this.config = config;
@@ -52,7 +52,7 @@ class AbyInstance {
         } else {
           let task;
           try {
-            task = new AbyTask(this, this.tasks[name]);
+            task = new RussTask(this, this.tasks[name]);
           } catch (err) {
             winston.error(err.toString());
             reject(err.toString());
@@ -144,10 +144,10 @@ class AbyInstance {
       else
         throw new Error(ERR_MSG);
     };
-    if (files.length === 0) throw new Error('No tasks defined in aby.tasks');
+    if (files.length === 0) throw new Error('No tasks defined in russ.tasks');
     this.tasks = {};
     for (const file of files) {
-      const taskOpts = require(`${process.cwd()}/aby.tasks/${file}`);
+      const taskOpts = require(`${process.cwd()}/russ.tasks/${file}`);
       if (this.tasks[taskOpts.name])
         throw new Error(`Task ${taskOpts.name} already defined...`);
       if (Array.isArray(taskOpts))
@@ -158,4 +158,4 @@ class AbyInstance {
   }
 }
 
-module.exports = AbyInstance;
+module.exports = RussInstance;

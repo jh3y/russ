@@ -1,7 +1,7 @@
 {
-  "name": "aby",
+  "name": "russ",
   "description": "a node script runner",
-  "version": "0.9.1",
+  "version": "0.9.0",
   "main": "index.js",
   "licenses": [
     {
@@ -10,7 +10,7 @@
   ],
   "preferGlobal": true,
   "bin": {
-    "aby": "./bin/aby"
+    "russ": "./bin/russ"
   },
   "engines": {
     "node": ">= 4.0.0"
@@ -40,12 +40,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jh3y/aby.git"
+    "url": "git+https://github.com/jh3y/russ.git"
   },
   "author": "jh3y <jh3y@users.noreply.github.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/jh3y/aby/issues"
+    "url": "https://github.com/jh3y/russ/issues"
   },
-  "homepage": "https://github.com/jh3y/aby#readme"
+  "homepage": "https://github.com/jh3y/russ#readme"
 }

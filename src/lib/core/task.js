@@ -1,14 +1,14 @@
 const winston  = require('winston');
 /**
-  * @class AbyTask
-  * task instance for Aby.
+  * @class RussTask
+  * task instance for russ.
   *
   * @constructor(instance, opts)
-  * @param instance {AbyInstance} - defines task instance to bind to.
+  * @param instance {russInstance} - defines task instance to bind to.
   * @param opts {Object} - defines logistics of task such as dependencies
   * pre/post hooks etc.
 */
-class AbyTask {
+class RussTask {
   constructor(instance, opts) {
     /* Assign all opts to task */
     Object.assign(this, opts, { instance });
@@ -37,11 +37,11 @@ class AbyTask {
   }
   /**
     * runs task
-    @return {Promise} - Promise that informs AbyInstance of task outcome.
+    @return {Promise} - Promise that informs russInstance of task outcome.
   */
   run() {
     /**
-      * Returns a Promise so that Aby knows to start on the next task.
+      * Returns a Promise so that russ knows to start on the next task.
       * Be mindful that a watching task will never resolve so if we wish to run
       * more than one watch, we must use the "concurrent" option.
     */
@@ -57,8 +57,8 @@ class AbyTask {
         * run function
         * passing the task dependencies(an Array of required modules) and a
         * reference Object that contains the resolve/reject for the Promise in
-        * addition to any configuration defined within .abyrc, environment and
-        * the AbyInstance run. "run" is important for when we have a watcher
+        * addition to any configuration defined within .russrc, environment and
+        * the russInstance run. "run" is important for when we have a watcher
         * that wishes to run another task or wish to run a task within a task.
       */
       this.func(...this.deps, {
@@ -74,4 +74,4 @@ class AbyTask {
   }
 }
 
-module.exports = AbyTask;
+module.exports = RussTask;

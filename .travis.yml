@@ -6,6 +6,5 @@ install:
   - npm install
 before_script:
   - make build
-  - sleep 5
 script:
   - make run-tests
