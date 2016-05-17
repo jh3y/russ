@@ -27,21 +27,11 @@ module.exports = {
   }
 }
 ```
-`russ` is a result of my personal exploration of different methods for task running
-
-* No specific ecosystem so no outdated dependencies
-* Self documented tasks for newcomers simply by running `russ`
-* No `package.json` bloat or misleading `Makefile`
-* Run tasks in sequence or concurrently
-* Pre and post hooks for tasks
-* Just uses node
-* Profiles running time of tasks
-* Just does what you tell it
-
 # Index
-1. [Why create Russ?](#why-create-russ)
-2. [Setup](#setup)
-3. [Usage](#usage)
+1. [Intro](#intro)
+2. [Why create Russ?](#why-create-russ)
+3. [Setup](#setup)
+4. [Usage](#usage)
   1. [Basic CLI](#basic-cli-usage)
   2. [Defining tasks](#defining-tasks)
     1. [Options](#options)
@@ -52,9 +42,20 @@ module.exports = {
     2. [A compilation task](#a-compilation-task)
     3. [A watcher](#a-watcher)
     4. [Concurrent development tasks](#concurrent-development-tasks)
-4. [Under the hood](#under-the-hood)
-5. [Contributing](#contributing)
+5. [Under the hood](#under-the-hood)
+6. [Contributing](#contributing)
 
+## Intro
+`russ` is a result of my personal exploration of different methods for task running
+
+* No specific ecosystem so no outdated dependencies
+* Self documented tasks for newcomers simply by running `russ`
+* No `package.json` bloat or misleading `Makefile`
+* Run tasks in sequence or concurrently
+* Pre and post hooks for tasks
+* Just uses node
+* Profiles running time of tasks
+* Just does what you tell it
 
 ## Why create russ?
 To be honest, after trying different things, I just thought I'd have a go at creating my own CLI task runner.
