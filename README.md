@@ -31,11 +31,30 @@ module.exports = {
 
 * No specific ecosystem so no outdated dependencies
 * Self documented tasks for newcomers simply by running `russ`
+* No `package.json` bloat or misleading `Makefile`
 * Run tasks in sequence or concurrently
 * Pre and post hooks for tasks
 * Just uses node
 * Profiles running time of tasks
 * Just does what you tell it
+
+# Index
+1. [Why create Russ?](#why-create-russ)
+2. [Setup](#setup)
+3. [Usage](#usage)
+  1. [Basic CLI](#basic-cli-usage)
+  2. [Defining tasks](#defining-tasks)
+    1. [Options](#options)
+    2. [Declaring "func"](#declaring-func)
+    3. [The "russ" object](#the-russ-object)
+  3. [Walkthrough examples](#walkthrough-examples)
+    1. [Browsersync local static server](#browsersync-local-static-server)
+    2. [A compilation task](#a-compilation-task)
+    3. [A watcher](#a-watcher)
+    4. [Concurrent development tasks](#concurrent-development-tasks)
+4. [Under the hood](#under-the-hood)
+5. [Contributing](#contributing)
+
 
 ## Why create russ?
 To be honest, after trying different things, I just thought I'd have a go at creating my own CLI task runner.
@@ -305,6 +324,9 @@ module.exports = [
 ```
 ## Under the hood
 `russ` is developed using `babel`. It relies heavily on `Promise`s for profiling and other behavioural features.
+
+## Contributing
+I'm very open to issue and pull request submissions for anywhere you feel `russ` could be improved or made more intuitive and user friendly :smile:
 
 ===
 
