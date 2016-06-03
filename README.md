@@ -22,8 +22,8 @@ module.exports = {
     'some-module'
   ],
   func: (someModule, russ) => {
-    someModule.compile(russ.config.sources.scripts);
-    setTimeout(russ.resolve);
+    someModule.compile(russ.config.sources.scripts)
+      .then(russ.resolve);
   }
 }
 ```
