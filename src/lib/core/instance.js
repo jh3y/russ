@@ -1,3 +1,4 @@
+require('babel-polyfill');
 const winston  = require('winston'),
   fs           = require('fs'),
   RussTask     = require('./task');

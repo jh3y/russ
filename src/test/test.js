@@ -3,6 +3,8 @@ const expect   = require('chai').expect,
   sinon        = require('sinon'),
   fs           = require('fs'),
   winston      = require('winston'),
+  mkdirp       = require('mkdirp'),
+  rimraf       = require('rimraf'),
   RussInstance = require('../lib/core/instance'),
   RussTask     = require('../lib/core/task');
 
@@ -31,26 +33,26 @@ const cleanUp = function () {
   try {
     fs.accessSync(PROPS.CONFIG, fs.F_OK);
     fs.unlinkSync(PROPS.CONFIG);
-    fs.accessSync(PROPS.DIR, fs.F_OK);
-    const files = fs.readdirSync(PROPS.DIR);
-    if (files.length !== 0)
-      for (const file of files) fs.unlinkSync(`${PROPS.DIR}/${file}`);
-    fs.rmdirSync(PROPS.DIR);
   } catch (err) {
     return;
   }
 };
 
 describe(PROPS.NAME, function() {
+  afterEach(function() {
+    cleanUp();
+    rimraf.sync(PROPS.DIR);
+  });
   describe('instance', function() {
     describe('initial setup', function () {
+      beforeEach(cleanUp);
       afterEach(cleanUp);
       it('throws error when missing setup files', function() {
-        const MISSING_MSG = `Missing ${PROPS.NAME} files...`;
+        const MISSING_MSG   = `Missing ${PROPS.NAME} files...`;
         expect(() => new RussInstance()).to.throw(Error, MISSING_MSG);
         fs.writeFileSync(PROPS.CONFIG, '{}');
         expect(() => new RussInstance()).to.throw(Error, MISSING_MSG);
-        fs.mkdirSync(PROPS.DIR);
+        mkdirp.sync(PROPS.DIR);
         expect(() => new RussInstance()).to.throw(Error);
       });
     });
@@ -58,7 +60,8 @@ describe(PROPS.NAME, function() {
     describe('task registry', function() {
       beforeEach(function() {
         fs.writeFileSync(PROPS.CONFIG, '{}');
-        fs.mkdirSync(PROPS.DIR);
+        rimraf.sync(PROPS.DIR);
+        mkdirp.sync(PROPS.DIR);
       });
       afterEach(cleanUp);
 
@@ -122,7 +125,8 @@ describe(PROPS.NAME, function() {
     describe('task pooling', () => {
       beforeEach(() => {
         fs.writeFileSync(PROPS.CONFIG, 'module.exports = {test: true}');
-        fs.mkdirSync(PROPS.DIR);
+        rimraf.sync(PROPS.DIR);
+        mkdirp.sync(PROPS.DIR);
       });
       afterEach(cleanUp);
       it('generates correct task pool', () => {
@@ -211,7 +215,8 @@ describe(PROPS.NAME, function() {
       });
       beforeEach(() => {
         fs.writeFileSync(PROPS.CONFIG, 'module.exports = {test: true}');
-        fs.mkdirSync(PROPS.DIR);
+        rimraf.sync(PROPS.DIR);
+        mkdirp.sync(PROPS.DIR);
       });
       afterEach(cleanUp);
       it('runs task', (done) => {
@@ -396,7 +401,8 @@ describe(PROPS.NAME, function() {
   describe('task', () => {
     before(() => {
       fs.writeFileSync(PROPS.CONFIG, 'module.exports = {test: true}');
-      fs.mkdirSync(PROPS.DIR);
+      rimraf.sync(PROPS.DIR);
+      mkdirp.sync(PROPS.DIR);
     });
     after(cleanUp);
     describe('creation', () => {

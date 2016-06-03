@@ -1,7 +1,7 @@
 [![NPM](https://nodei.co/npm/russ.png?downloads=true)](https://nodei.co/npm/russ/)
 
 [![Build Status](https://travis-ci.org/jh3y/russ.svg?branch=master)](https://travis-ci.org/jh3y/russ)
-![img](https://img.shields.io/badge/version-0.9.0-000000.svg)
+![img](https://img.shields.io/badge/version-0.9.2-000000.svg)
 ![img](https://img.shields.io/badge/language-JS-9a12b3.svg)
 ![img](https://img.shields.io/badge/license-MIT-22a7f0.svg)
 

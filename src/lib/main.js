@@ -1,3 +1,4 @@
+require('babel-polyfill');
 /**
   * russ - node scripts runner
   *
