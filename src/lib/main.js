@@ -19,7 +19,7 @@ const handleCommand = (commands) => {
         instance = new RussInstance(program.env);
         instance.runTask(task);
       } catch (err) {
-        winston.error(err.toString());
+        winston.error(err.toString()+'\n'+err.stack);
       }
   },
   setupInterface = () => {
@@ -38,5 +38,5 @@ try {
   instance = new RussInstance();
   if (program.rawArgs.length === 2) instance.info();
 } catch (err) {
-  winston.error(err.toString());
+  winston.error(err.toString()+'\n'+err.stack);
 }
