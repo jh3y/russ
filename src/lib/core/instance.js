@@ -17,9 +17,8 @@ class RussInstance {
     try {
       config = require(`${process.cwd()}/.russrc`);
       tasks = fs.readdirSync('russ.tasks');
-    } catch (err) {
-      throw Error('Missing russ files...');
-    }
+    } catch (err) { }
+    tasks = fs.readdirSync('russ.tasks');
     this.env = env;
     this.config = config;
     this.register(tasks);
@@ -145,7 +144,7 @@ class RussInstance {
       else
         throw new Error(ERR_MSG);
     };
-    if (files.length === 0) throw new Error('No tasks defined in russ.tasks');
+    if (!files || files.length === 0) throw new Error('No tasks defined in russ.tasks');
     this.tasks = {};
     for (const file of files) {
       const taskOpts = require(`${process.cwd()}/russ.tasks/${file}`);
