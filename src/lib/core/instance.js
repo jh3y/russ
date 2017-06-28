@@ -16,10 +16,12 @@ class RussInstance {
     let config;
     try {
       config = require(`${process.cwd()}/.russrc`);
-      tasks = fs.readdirSync('russ.tasks');
     } catch (err) {
       throw Error('Missing russ files...');
     }
+    tasks = fs.readdirSync('russ.tasks');
+    if(!tasks || tasks.length == 0)
+      tasks = fs.readdirSync('tasks');
     this.env = env;
     this.config = config;
     this.register(tasks);
