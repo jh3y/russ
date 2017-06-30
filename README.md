@@ -329,8 +329,8 @@ module.exports = [
 ## Contributing
 I'm very open to issue and pull request submissions for anywhere you feel `russ` could be improved or made more intuitive and user friendly :smile:
 
-===
+------
 
 Any problems or questions, feel free to post an issue/PR or tweet me, [@_jh3y](https://twitter.com/@_jh3y)!
 
-_made with :heart: by [jh3y](twitter.com/_jh3y) 2016_
+_made with :heart: by [jh3y](twitter.com/_jh3y) 2017_
